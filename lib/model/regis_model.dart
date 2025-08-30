@@ -4,18 +4,18 @@
 
 import 'dart:convert';
 
-RegisterFutsal registerFutsalFromJson(String str) =>
-    RegisterFutsal.fromJson(json.decode(str));
+RegisFutsal registerFutsalFromJson(String str) =>
+    RegisFutsal.fromJson(json.decode(str));
 
-String registerFutsalToJson(RegisterFutsal data) => json.encode(data.toJson());
+String registerFutsalToJson(RegisFutsal data) => json.encode(data.toJson());
 
-class RegisterFutsal {
+class RegisFutsal {
   String? message;
   Data? data;
 
-  RegisterFutsal({this.message, this.data});
+  RegisFutsal({this.message, this.data});
 
-  factory RegisterFutsal.fromJson(Map<String, dynamic> json) => RegisterFutsal(
+  factory RegisFutsal.fromJson(Map<String, dynamic> json) => RegisFutsal(
     message: json["message"],
     data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );

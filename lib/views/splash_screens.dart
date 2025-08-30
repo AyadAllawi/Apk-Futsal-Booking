@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:futsal_booking/views/home_futsal.dart';
-import 'package:futsal_booking/views/login_futsal.dart';
+import 'package:futsal_booking/views/logreg.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const LoginFutsal()),
+          MaterialPageRoute(builder: (_) => const Logreg()),
         );
       }
     });
@@ -45,21 +45,31 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 250),
             Container(
               child: Image(
                 image: AssetImage("assets/images/foto/Logo.png"),
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 16),
-            // Text(
-            //   "VEGAS APP",
-            //   style: TextStyle(
-            //     fontSize: 24,
-            //     fontWeight: FontWeight.bold,
-            //     color: Color(0xFF1A2A80),
-            //   ),
-            // ),
+            Spacer(),
+            RichText(
+              text: TextSpan(
+                text: 'Powered by ',
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 121, 117, 117),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Ayad Allawi',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+            // SizedBox(height: 16),
           ],
         ),
       ),
