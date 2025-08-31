@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:futsal_booking/api/endpoint/endpoint.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
-import 'package:futsal_booking/services/services.dart';
+import 'package:futsal_booking/services/services_user.dart';
 import 'package:http/http.dart' as http;
 
 class ProfileService {

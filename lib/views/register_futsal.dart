@@ -88,7 +88,6 @@ class _RegisterFutsalState extends State<RegisterFutsal> {
       backgroundColor: const Color(0xFF060F30),
       body: Stack(
         children: [
-          // Logo
           Align(
             alignment: Alignment.topLeft,
             child: Transform.translate(
@@ -101,7 +100,6 @@ class _RegisterFutsalState extends State<RegisterFutsal> {
             ),
           ),
 
-          // Main Layout
           SafeArea(
             child: Column(
               children: [
@@ -134,7 +132,6 @@ class _RegisterFutsalState extends State<RegisterFutsal> {
                             ),
                             const SizedBox(height: 30),
 
-                            // ===== Name =====
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -176,8 +173,6 @@ class _RegisterFutsalState extends State<RegisterFutsal> {
                               ],
                             ),
                             const SizedBox(height: 10),
-
-                            // ===== Email =====
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -219,8 +214,6 @@ class _RegisterFutsalState extends State<RegisterFutsal> {
                               ],
                             ),
                             const SizedBox(height: 10),
-
-                            // ===== Password =====
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

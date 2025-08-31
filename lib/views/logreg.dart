@@ -17,7 +17,8 @@ class _LogregState extends State<Logreg> {
           children: [
             Container(
               margin: const EdgeInsets.only(top: 190),
-              height: 50,
+              height: 80,
+
               width: double.infinity,
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -26,7 +27,7 @@ class _LogregState extends State<Logreg> {
                 ),
               ),
             ),
-            const SizedBox(height: 160),
+            const SizedBox(height: 270),
 
             const Text(
               "MAIN FUTSAL JADI LEBIH\nMUDAH",

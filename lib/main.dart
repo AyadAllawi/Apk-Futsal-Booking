@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking/navigations/navigation_bar.dart';
 import 'package:futsal_booking/views/home_futsal.dart';
+import 'package:futsal_booking/views/lapangan_screen.dart';
 import 'package:futsal_booking/views/login_futsal.dart';
 import 'package:futsal_booking/views/register_futsal.dart';
 import 'package:futsal_booking/views/splash_screens.dart';
@@ -30,9 +32,11 @@ class MyApp extends StatelessWidget {
         '/login_futsal': (context) => const LoginFutsal(),
         '/register_futsal': (context) => const RegisterFutsal(),
         '/home_futsal': (context) => const Home(),
+        '/bot': (context) => Bottom(),
+        '/lapangan': (context) => LapanganScreen(),
       },
       // home: LoginFutsal(),
-      home: const SplashScreen(),
+      home: Bottom(),
     );
   }
 }

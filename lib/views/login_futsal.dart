@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/api/register_user.dart';
+import 'package:futsal_booking/navigations/navigation_bar.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:futsal_booking/views/register_futsal.dart';
 
@@ -46,8 +47,14 @@ class _LoginFutsalState extends State<LoginFutsal> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
+      user = result;
       PreferenceHandler.saveToken(user?.data?.token.toString() ?? "");
-      // context.push(Bottom());
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Bottom.id,
+        (Route<dynamic> route) => false,
+      );
+
       print(user?.toJson());
     } catch (e) {
       print(e);
@@ -248,7 +255,7 @@ class _LoginFutsalState extends State<LoginFutsal> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: isLoading
-                                    ? null // tombol disable kalau lagi loading
+                                    ? null
                                     : () {
                                         setState(() {
                                           print("Login Clicked");
