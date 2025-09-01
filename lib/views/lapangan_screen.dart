@@ -1,150 +1,162 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class LapanganScreen extends StatefulWidget {
   const LapanganScreen({super.key});
-  static const String id = "/lapangan";
+
   @override
   State<LapanganScreen> createState() => _LapanganScreenState();
 }
 
 class _LapanganScreenState extends State<LapanganScreen> {
-  final List<Map<String, dynamic>> lapanganList = [
-    {
-      "image": "assets/images/foto/lapangan1.jpg",
-      "name": "CGV Sport Hall FX",
-      "address": "Jln. Jend. Sudirman No.25",
-      "rating": 4.2,
-      "reviews": 40,
-      "price": "150k/jam",
-      "status": "Tersedia",
-    },
-    {
-      "image": "assets/images/foto/lapangan2.jpg",
-      "name": "Senayan Futsal Arena",
-      "address": "Jl. Asia Afrika No.12",
-      "rating": 4.5,
-      "reviews": 55,
-      "price": "200k/jam",
-      "status": "Penuh",
-    },
-  ];
+  String selectedFilter = "All";
 
-  String selectedCategory = "All";
-
-  final List<String> categories = ["All", "Tersedia", "Penuh"];
-
-  Widget buildLapanganCard(Map<String, dynamic> lap) {
-    final bool isAvailable = lap["status"] == "Tersedia";
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      elevation: 4,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
         children: [
-          // Gambar + overlay
-          Stack(
-            children: [
-              Image.asset(
-                lap["image"],
-                width: double.infinity,
-                height: 160,
-                fit: BoxFit.cover,
+          Container(
+            height: 210,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color(0xFF0C1C3C),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
               ),
-              Container(
-                height: 160,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.black.withOpacity(0.5), Colors.transparent],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 12,
-                bottom: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isAvailable ? Colors.green : Colors.red,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    lap["status"],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(14),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  lap["name"],
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 27,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "Pilihan Lapangan!",
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Icon(
+                        Icons.notifications_none,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  lap["address"],
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-                const SizedBox(height: 10),
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.orange,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "${lap["rating"]} (${lap["reviews"]})",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 17,
+                          vertical: 1,
+                        ),
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1C2C4C),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const TextField(
+                          decoration: InputDecoration(
+                            hintText: "Cari Lapangan di Jakarta",
+                            hintStyle: TextStyle(color: Colors.grey),
+                            border: InputBorder.none,
+                            icon: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: Icon(Icons.search, color: Colors.white),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      lap["price"],
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: isAvailable ? Colors.green : Colors.red,
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Filter Chips
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                _buildFilterChip(
+                  "All",
+                  Colors.grey[300]!,
+                  Colors.yellow.shade700,
+                ),
+                const SizedBox(width: 8),
+                _buildFilterChip("Tersedia", Colors.grey[300]!, Colors.green),
+                const SizedBox(width: 8),
+                _buildFilterChip("Penuh", Colors.grey[300]!, Colors.red),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // List Lapangan
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _buildLapanganCard(
+                  nama: "CGV Sport Hall FX",
+                  alamat: "Jl. Jend. Sudirman No.25",
+                  rating: 4.2,
+                  jumlahRating: 40,
+                  harga: "150k/jam",
+                  jarak: "1.6 km",
+                  availableSlot: 2,
+
+                  image: "assets/images/foto/lapangan1.jpg",
+                ),
+                const SizedBox(height: 12),
+                _buildLapanganCard(
+                  nama: "Futsal Cilandak",
+                  alamat: "Jl. TB Simatupang",
+                  rating: 4.5,
+                  jumlahRating: 30,
+                  harga: "200k/jam",
+                  jarak: "2.5 km",
+                  availableSlot: 1,
+
+                  image: "assets/images/foto/lapangan2.jpg",
+                ),
+                const SizedBox(height: 12),
+                _buildLapanganCard(
+                  nama: "Futsal Cilandak",
+                  alamat: "Jl. TB Simatupang",
+                  rating: 4.5,
+                  jumlahRating: 30,
+                  harga: "200k/jam",
+                  jarak: "2.5 km",
+                  availableSlot: 1,
+
+                  image: "assets/images/foto/lapangan3.jpg",
+                ),
+                _buildLapanganCard(
+                  nama: "Futsal Cilandak",
+                  alamat: "Jl. TB Simatupang",
+                  rating: 4.5,
+                  jumlahRating: 30,
+                  harga: "200k/jam",
+                  jarak: "2.5 km",
+                  availableSlot: 1,
+
+                  image: "assets/images/foto/lapangan4.jpg",
+                ),
+                //Proyek
               ],
             ),
           ),
@@ -153,95 +165,152 @@ class _LapanganScreenState extends State<LapanganScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final filteredList = selectedCategory == "All"
-        ? lapanganList
-        : lapanganList
-              .where((lap) => lap["status"] == selectedCategory)
-              .toList();
-
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text(
-          "Lapangan",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        foregroundColor: Colors.black,
+  Widget _buildFilterChip(String label, Color bg, Color selectedColor) {
+    return FilterChip(
+      label: Text(label),
+      selected: selectedFilter == label,
+      onSelected: (_) {
+        setState(() {
+          selectedFilter = label;
+        });
+      },
+      backgroundColor: bg,
+      selectedColor: selectedColor,
+      checkmarkColor: Colors.white,
+      labelStyle: TextStyle(
+        color: selectedFilter == label ? Colors.white : Colors.black,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Category Filter
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: categories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  final isSelected = category == selectedCategory;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCategory = category;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.green : Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected
-                              ? Colors.green
-                              : Colors.grey.shade300,
-                        ),
-                      ),
-                      child: Text(
-                        category,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
 
-            // List Lapangan + animasi
-            Expanded(
-              child: AnimationLimiter(
-                child: ListView.builder(
-                  itemCount: filteredList.length,
-                  itemBuilder: (context, index) {
-                    final lap = filteredList[index];
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 500),
-                      child: SlideAnimation(
-                        verticalOffset: 40.0,
-                        child: FadeInAnimation(child: buildLapanganCard(lap)),
-                      ),
-                    );
-                  },
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    );
+  }
+
+  // Lapangan Card
+  Widget _buildLapanganCard({
+    required String nama,
+    required String alamat,
+    required double rating,
+    required int jumlahRating,
+    required String harga,
+    required String jarak,
+    required int availableSlot,
+
+    required String image,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C1C3C),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: Image.asset(
+                  image,
+                  height: 100,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
+
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.yellow,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    jarak,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nama,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+
+                const SizedBox(height: 2),
+
+                Text(
+                  alamat,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                Row(
+                  children: [
+                    const Icon(Icons.star, size: 14, color: Colors.orange),
+                    const SizedBox(width: 4),
+
+                    Text(
+                      "$rating ($jumlahRating)",
+
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    ),
+
+                    const Spacer(),
+                    Text(
+                      harga,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                Divider(),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Text(
+                      "Available $availableSlot Slot Today",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

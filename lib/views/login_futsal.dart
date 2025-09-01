@@ -172,7 +172,6 @@ class _LoginFutsalState extends State<LoginFutsal> {
                             ),
                             const SizedBox(height: 10),
 
-                            // ===== Password =====
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -298,7 +297,6 @@ class _LoginFutsalState extends State<LoginFutsal> {
                   ),
                 ),
 
-                // ==== BOTTOM TEXT ====
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Row(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:futsal_booking/views/lapangan_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,6 +8,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  String selectedFilter = "All";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +43,7 @@ class _HomeState extends State<Home> {
                       ),
                     ],
                   ),
-                  Icon(Icons.notifications_none, color: Colors.white),
+                  Icon(Icons.notifications_none, color: Colors.white, size: 30),
                 ],
               ),
             ),
@@ -117,29 +117,82 @@ class _HomeState extends State<Home> {
               child: Row(
                 children: [
                   FilterChip(
-                    label: const Text("Terdekat"),
-                    selected: true,
-                    onSelected: (_) {},
+                    label: const Text("Semua"),
+                    selected: selectedFilter == "All",
+                    onSelected: (_) {
+                      setState(() {
+                        selectedFilter = "All";
+                      });
+                    },
                     backgroundColor: Colors.grey[300],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 10,
+                    ),
+                    selectedColor: const Color(0xFF676667),
+                    checkmarkColor: Colors.white,
+                    labelStyle: TextStyle(
+                      color: selectedFilter == "All"
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   FilterChip(
-                    label: const Text("Termurah"),
-                    selected: false,
-                    onSelected: (_) {},
+                    label: const Text("Tersedia"),
+                    selected: selectedFilter == "Tersedia",
+                    onSelected: (_) {
+                      setState(() {
+                        selectedFilter = "Tersedia";
+                      });
+                    },
                     backgroundColor: Colors.grey[300],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 10,
+                    ),
+                    selectedColor: Colors.green,
+                    checkmarkColor: Colors.white,
+                    labelStyle: TextStyle(
+                      color: selectedFilter == "Tersedia"
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   FilterChip(
-                    label: const Text("Fasilitas Lengkap"),
-                    selected: false,
-                    onSelected: (_) {},
+                    label: const Text("Penuh"),
+                    selected: selectedFilter == "Penuh",
+                    onSelected: (_) {
+                      setState(() {
+                        selectedFilter = "Penuh";
+                      });
+                    },
                     backgroundColor: Colors.grey[300],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 10,
+                    ),
+                    selectedColor: Colors.red,
+                    checkmarkColor: Colors.white,
+                    labelStyle: TextStyle(
+                      color: selectedFilter == "Penuh"
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
 
             Expanded(
@@ -163,12 +216,6 @@ class _HomeState extends State<Home> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, LapanganScreen.id);
-                            },
-                            child: const Text("Lihat Semua"),
-                          ),
                         ],
                       ),
 
@@ -176,10 +223,10 @@ class _HomeState extends State<Home> {
 
                       Expanded(
                         child: GridView.count(
-                          crossAxisCount: 2,
+                          crossAxisCount: 1,
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
-                          childAspectRatio: 0.95,
+                          childAspectRatio: 2,
                           children: [
                             _buildLapanganCard(
                               nama: "CGV Sport Hall FX",
@@ -203,7 +250,7 @@ class _HomeState extends State<Home> {
                               rating: 4.3,
                               harga: "280k/jam",
                               jarak: "3.0 km",
-                              image: "assets/images/foto/lapangan1.jpg",
+                              image: "assets/images/foto/lapangan3.jpg",
                             ),
                             _buildLapanganCard(
                               nama: "Lapangan B",
@@ -211,23 +258,7 @@ class _HomeState extends State<Home> {
                               rating: 4.6,
                               harga: "400k/jam",
                               jarak: "1.2 km",
-                              image: "assets/images/foto/lapangan1.jpg",
-                            ),
-                            _buildLapanganCard(
-                              nama: "Lapangan B",
-                              alamat: "Jl. Contoh Alamat",
-                              rating: 4.6,
-                              harga: "400k/jam",
-                              jarak: "1.2 km",
-                              image: "assets/images/foto/lapangan1.jpg",
-                            ),
-                            _buildLapanganCard(
-                              nama: "Lapangan B",
-                              alamat: "Jl. Contoh Alamat",
-                              rating: 4.6,
-                              harga: "400k/jam",
-                              jarak: "1.2 km",
-                              image: "assets/images/foto/lapangan1.jpg",
+                              image: "assets/images/foto/lapangan4.jpg",
                             ),
                           ],
                         ),
@@ -253,7 +284,7 @@ class _HomeState extends State<Home> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF1C2C4C),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -286,7 +317,7 @@ class _HomeState extends State<Home> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.yellow,
+                      color: const Color.fromARGB(255, 145, 206, 4),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -303,7 +334,7 @@ class _HomeState extends State<Home> {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -312,6 +343,7 @@ class _HomeState extends State<Home> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    color: Color(0xFFFFFFFF),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -322,6 +354,7 @@ class _HomeState extends State<Home> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                Divider(),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -329,7 +362,10 @@ class _HomeState extends State<Home> {
                     const SizedBox(width: 4),
                     Text(
                       rating.toString(),
-                      style: const TextStyle(fontSize: 12),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFFFFFFFF),
+                      ),
                     ),
                     const Spacer(),
                     Text(
@@ -337,6 +373,7 @@ class _HomeState extends State<Home> {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
+                        color: Color(0xffffffff),
                       ),
                     ),
                   ],
