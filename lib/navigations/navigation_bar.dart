@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/views/home_futsal.dart';
 import 'package:futsal_booking/views/lapangan_screen.dart';
+import 'package:futsal_booking/views/pemesanan.dart';
 import 'package:get/get.dart';
 
 class Bottom extends StatelessWidget {
@@ -51,5 +52,9 @@ class Bottom extends StatelessWidget {
 class NavigationController extends GetxController {
   final RxInt selectedIndex = 0.obs;
 
-  final List<Widget> screens = [const Home(), const LapanganScreen()];
+  final List<Widget> screens = [
+    const Home(),
+    const LapanganScreen(),
+    Pemesanan(),
+  ];
 }

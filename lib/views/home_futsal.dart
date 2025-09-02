@@ -198,12 +198,12 @@ class _HomeState extends State<Home> {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  color: Color.fromARGB(255, 201, 201, 201),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
                 constraints: const BoxConstraints.expand(),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Row(
@@ -244,21 +244,63 @@ class _HomeState extends State<Home> {
                               jarak: "2.5 km",
                               image: "assets/images/foto/lapangan2.jpg",
                             ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 201, 201, 201),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(1)),
+                ),
+                constraints: const BoxConstraints.expand(),
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Lapangan Favorit",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      Expanded(
+                        child: GridView.count(
+                          crossAxisCount: 1,
+                          mainAxisSpacing: 12,
+                          crossAxisSpacing: 12,
+                          childAspectRatio: 2,
+                          children: [
                             _buildLapanganCard(
-                              nama: "Lapangan A",
-                              alamat: "Jl. Contoh Alamat",
-                              rating: 4.3,
-                              harga: "280k/jam",
-                              jarak: "3.0 km",
-                              image: "assets/images/foto/lapangan3.jpg",
+                              nama: "CGV Sport Hall FX",
+                              alamat: "Jl. Jend. Sudirman No.25",
+                              rating: 4.2,
+                              harga: "300k/jam",
+                              jarak: "1.6 km",
+                              image: "assets/images/foto/lapangan1.jpg",
                             ),
                             _buildLapanganCard(
-                              nama: "Lapangan B",
-                              alamat: "Jl. Contoh Alamat",
-                              rating: 4.6,
-                              harga: "400k/jam",
-                              jarak: "1.2 km",
-                              image: "assets/images/foto/lapangan4.jpg",
+                              nama: "Futsal Cilandak",
+                              alamat: "Jl. TB Simatupang",
+                              rating: 4.5,
+                              harga: "350k/jam",
+                              jarak: "2.5 km",
+                              image: "assets/images/foto/lapangan2.jpg",
                             ),
                           ],
                         ),

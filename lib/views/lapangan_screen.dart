@@ -59,10 +59,10 @@ class _LapanganScreenState extends State<LapanganScreen> {
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.symmetric(
-                          horizontal: 17,
-                          vertical: 1,
+                          horizontal: 20,
+                          // vertical: 1,
                         ),
-                        height: 60,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: const Color(0xFF1C2C4C),
                           borderRadius: BorderRadius.circular(12),
@@ -73,7 +73,10 @@ class _LapanganScreenState extends State<LapanganScreen> {
                             hintStyle: TextStyle(color: Colors.grey),
                             border: InputBorder.none,
                             icon: Padding(
-                              padding: EdgeInsets.all(20),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 1,
+                              ),
                               child: Icon(Icons.search, color: Colors.white),
                             ),
                           ),
