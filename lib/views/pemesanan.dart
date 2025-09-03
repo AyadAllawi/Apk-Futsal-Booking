@@ -26,28 +26,33 @@ class _PemesananState extends State<Pemesanan>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
         title: const Text(
           "Pemesanan",
           style: TextStyle(
             fontFamily: "Poppins",
-            fontSize: 28,
-            // color: Colors.black,
+            fontSize: 24,
+            color: Color(0xFF0A192F),
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
+        elevation: 1,
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.red,
-          labelColor: Colors.black,
+          indicatorColor: Color(0xFF0066FF),
+          labelColor: Color(0xFF0066FF),
           unselectedLabelColor: Colors.grey,
+          labelStyle: const TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
           tabs: const [
-            Tab(text: "Pemesanan Berlangsung"),
-            Tab(text: "Riwayat Pemesanan"),
+            Tab(text: "Bookingan Berlangsung"),
+            Tab(text: "Riwayat Booking"),
           ],
         ),
       ),
@@ -63,25 +68,27 @@ class _PemesananState extends State<Pemesanan>
                   fontFamily: "Poppins",
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Color(0xFF0A192F),
                 ),
               ),
               const SizedBox(height: 16),
+
               Card(
-                color: Color(0xFF1C2C4C),
+                color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                elevation: 1,
+                elevation: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 5,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       decoration: const BoxDecoration(
-                        color: Colors.deepPurple,
+                        color: Color(0xFFFDCB58),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(12),
                           topRight: Radius.circular(12),
@@ -92,20 +99,21 @@ class _PemesananState extends State<Pemesanan>
                         style: TextStyle(
                           fontFamily: "Poppins",
                           fontSize: 14,
-                          color: Colors.white,
+                          color: Color(0xFF0A192F),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
+
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(16),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Icon(
                             Icons.sports_soccer,
-                            size: 40,
-                            color: Colors.black54,
+                            size: 36,
+                            color: Color(0xFF0066FF),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -118,6 +126,7 @@ class _PemesananState extends State<Pemesanan>
                                     fontFamily: "Poppins",
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: Color(0xFF0A192F),
                                   ),
                                 ),
                                 SizedBox(height: 4),
@@ -126,12 +135,13 @@ class _PemesananState extends State<Pemesanan>
                                   style: TextStyle(
                                     fontFamily: "Poppins",
                                     fontSize: 13,
-                                    color: Colors.black54,
+                                    color: Color(0xFF7D7D7D),
                                   ),
                                 ),
                               ],
                             ),
                           ),
+
                           Container(
                             width: 120,
                             height: 80,
@@ -148,38 +158,65 @@ class _PemesananState extends State<Pemesanan>
                         ],
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20, bottom: 10),
-                      child: Text(
-                        "Lihat E-Tiket",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontSize: 13,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Chip(
+                            label: Text(
+                              "Berlangsung",
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                            backgroundColor: Color(0xFF2ECC71),
+                            visualDensity: VisualDensity.compact,
+                          ),
+
+                          Text(
+                            "Lihat E-Tiket",
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 13,
+                              color: Color(0xFF0066FF),
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
+
+              const SizedBox(height: 16),
+
               Card(
-                color: Color(0x000000ff),
+                color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-
-                elevation: 1,
+                elevation: 2,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Badge Venue
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 5,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       decoration: const BoxDecoration(
-                        color: Colors.deepPurple,
+                        color: Color(0xFFFDCB58),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(12),
                           topRight: Radius.circular(12),
@@ -190,20 +227,22 @@ class _PemesananState extends State<Pemesanan>
                         style: TextStyle(
                           fontFamily: "Poppins",
                           fontSize: 14,
-                          color: Colors.white,
+                          color: Color(0xFF0A192F),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
+
+                    // Content
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(16),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Icon(
                             Icons.sports_soccer,
-                            size: 40,
-                            color: Colors.black54,
+                            size: 36,
+                            color: Color(0xFF7D7D7D),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -216,6 +255,7 @@ class _PemesananState extends State<Pemesanan>
                                     fontFamily: "Poppins",
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: Color(0xFF0A192F),
                                   ),
                                 ),
                                 SizedBox(height: 4),
@@ -224,12 +264,13 @@ class _PemesananState extends State<Pemesanan>
                                   style: TextStyle(
                                     fontFamily: "Poppins",
                                     fontSize: 13,
-                                    color: Colors.black54,
+                                    color: Color(0xFF7D7D7D),
                                   ),
                                 ),
                               ],
                             ),
                           ),
+
                           Container(
                             width: 120,
                             height: 80,
@@ -246,16 +287,40 @@ class _PemesananState extends State<Pemesanan>
                         ],
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20, bottom: 10),
-                      child: Text(
-                        "Lihat E-Tiket",
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontSize: 13,
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Chip(
+                            label: Text(
+                              "Selesai",
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                            backgroundColor: Color(0xFF7D7D7D),
+                            visualDensity: VisualDensity.compact,
+                          ),
+
+                          Text(
+                            "Lihat E-Tiket",
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              fontSize: 13,
+                              color: Color(0xFF0066FF),
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
