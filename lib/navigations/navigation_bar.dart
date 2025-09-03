@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:futsal_booking/views/home_futsal.dart';
 import 'package:futsal_booking/views/lapangan_screen.dart';
 import 'package:futsal_booking/views/pemesanan.dart';
+import 'package:futsal_booking/views/profile.dart';
 import 'package:get/get.dart';
 
 class Bottom extends StatelessWidget {
@@ -56,5 +57,6 @@ class NavigationController extends GetxController {
     const Home(),
     const LapanganScreen(),
     Pemesanan(),
+    Profile(),
   ];
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:futsal_booking/api/endpoint/endpoint.dart';
-import 'package:futsal_booking/model/get_user.dart';
+import 'package:futsal_booking/model/loginreg/get_user.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:futsal_booking/views/register_futsal.dart';
 import 'package:http/http.dart' as http;
