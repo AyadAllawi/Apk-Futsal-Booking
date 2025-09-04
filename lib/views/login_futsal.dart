@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/api/register_user.dart';
+import 'package:futsal_booking/model/auth/loginreg/regis_model.dart';
 import 'package:futsal_booking/navigations/navigation_bar.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:futsal_booking/views/register_futsal.dart';
@@ -48,7 +49,7 @@ class _LoginFutsalState extends State<LoginFutsal> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
       user = result;
-      PreferenceHandler.saveToken(user?.data?.token.toString() ?? "");
+      PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
       Navigator.pushNamedAndRemoveUntil(
         context,
         Bottom.id,
@@ -320,7 +321,7 @@ class _LoginFutsalState extends State<LoginFutsal> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, RegisterFutsal.id);
+                          Navigator.pushNamed(context, RegisterScreen.id);
                         },
                       ),
                     ],

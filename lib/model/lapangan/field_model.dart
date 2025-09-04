@@ -1,140 +1,102 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// To parse this JSON data, do
+//
+//     final field = fieldFromJson(jsonString);
+
 import 'dart:convert';
 
+Field fieldFromJson(String str) => Field.fromJson(json.decode(str));
+
+String fieldToJson(Field data) => json.encode(data.toJson());
+
 class Field {
-  final int id;
-  final String nama;
-  final String alamat;
-  final double rating;
-  final int jumlahRating;
-  final double harga;
-  final double jarak;
-  final int availableSlot;
-  final String? imagePath;
+  String? message;
+  List<Datum>? data;
 
-  String pricePerHour;
+  Field({this.message, this.data});
 
-  Field({
-    required this.id,
-    required this.nama,
-    required this.alamat,
-    required this.rating,
-    required this.jumlahRating,
-    required this.harga,
-    required this.jarak,
-    required this.availableSlot,
+  factory Field.fromJson(Map<String, dynamic> json) => Field(
+    message: json["message"],
+    data: json["data"] == null
+        ? []
+        : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "message": message,
+    "data": data == null
+        ? []
+        : List<dynamic>.from(data!.map((x) => x.toJson())),
+  };
+}
+
+class Datum {
+  int? id;
+  String? name;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String? imagePath;
+  String? pricePerHour;
+  String? imageUrl;
+  String get nama => name ?? '';
+  String get alamat => "Alamat default"; // Default value
+  double get rating => 0.0; // Default value
+  int get jumlahRating => 0; // Default value
+  double get harga =>
+      double.tryParse(pricePerHour ?? '0') ??
+      0; // Convert pricePerHour to double
+  double get jarak => 0.0; // Default value
+  int get availableSlot => 0; // Default value
+
+  Datum({
+    this.id,
+    this.name,
+    this.createdAt,
+    this.updatedAt,
     this.imagePath,
-    required this.pricePerHour,
+    this.pricePerHour,
+    this.imageUrl,
   });
 
-  factory Field.fromJson(Map<String, dynamic> json) {
-    return Field(
-      id: json['id'] ?? 0,
-      nama: json['nama'] ?? '',
-      alamat: json['alamat'] ?? '',
-      rating: (json['rating'] ?? 0).toDouble(),
-      jumlahRating: json['jumlah_rating'] ?? 0,
-      harga: (json['harga'] ?? 0).toDouble(),
-      jarak: (json['jarak'] ?? 0).toDouble(),
-      availableSlot: json['available_slot'] ?? 0,
-      imagePath: json['image_path'],
-      pricePerHour: json['price_per_hour'] ?? '',
-    );
-  }
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    id: json["id"],
+    name: json["name"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    imagePath: json["image_path"],
+    pricePerHour: json["price_per_hour"],
+    imageUrl: json["image_url"],
+  );
 
-  Field copyWith({
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "image_path": imagePath,
+    "price_per_hour": pricePerHour,
+    "image_url": imageUrl,
+  };
+  Datum copyWith({
     int? id,
-    String? nama,
-    String? alamat,
-    double? rating,
-    int? jumlahRating,
-    double? harga,
-    double? jarak,
-    int? availableSlot,
+    String? name,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     String? imagePath,
     String? pricePerHour,
+    String? imageUrl,
   }) {
-    return Field(
+    return Datum(
       id: id ?? this.id,
-      nama: nama ?? this.nama,
-      alamat: alamat ?? this.alamat,
-      rating: rating ?? this.rating,
-      jumlahRating: jumlahRating ?? this.jumlahRating,
-      harga: harga ?? this.harga,
-      jarak: jarak ?? this.jarak,
-      availableSlot: availableSlot ?? this.availableSlot,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       imagePath: imagePath ?? this.imagePath,
       pricePerHour: pricePerHour ?? this.pricePerHour,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'nama': nama,
-      'alamat': alamat,
-      'rating': rating,
-      'jumlahRating': jumlahRating,
-      'harga': harga,
-      'jarak': jarak,
-      'availableSlot': availableSlot,
-      'imagePath': imagePath,
-      'pricePerHour': pricePerHour,
-    };
-  }
-
-  factory Field.fromMap(Map<String, dynamic> map) {
-    return Field(
-      id: map['id'] as int,
-      nama: map['nama'] as String,
-      alamat: map['alamat'] as String,
-      rating: map['rating'] as double,
-      jumlahRating: map['jumlahRating'] as int,
-      harga: map['harga'] as double,
-      jarak: map['jarak'] as double,
-      availableSlot: map['availableSlot'] as int,
-      imagePath: map['imagePath'] != null ? map['imagePath'] as String : null,
-      pricePerHour: map['pricePerHour'] as String,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Field.fromJsonString(String source) =>
-      Field.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'Field(id: $id, nama: $nama, alamat: $alamat, rating: $rating, jumlahRating: $jumlahRating, harga: $harga, jarak: $jarak, availableSlot: $availableSlot, imagePath: $imagePath, pricePerHour: $pricePerHour)';
-  }
-
-  @override
-  bool operator ==(covariant Field other) {
-    if (identical(this, other)) return true;
-
-    return other.id == id &&
-        other.nama == nama &&
-        other.alamat == alamat &&
-        other.rating == rating &&
-        other.jumlahRating == jumlahRating &&
-        other.harga == harga &&
-        other.jarak == jarak &&
-        other.availableSlot == availableSlot &&
-        other.imagePath == imagePath &&
-        other.pricePerHour == pricePerHour;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        nama.hashCode ^
-        alamat.hashCode ^
-        rating.hashCode ^
-        jumlahRating.hashCode ^
-        harga.hashCode ^
-        jarak.hashCode ^
-        availableSlot.hashCode ^
-        imagePath.hashCode ^
-        pricePerHour.hashCode;
   }
 }

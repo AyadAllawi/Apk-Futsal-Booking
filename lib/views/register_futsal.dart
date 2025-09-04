@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/api/register_user.dart';
+import 'package:futsal_booking/model/auth/loginreg/regis_model.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:futsal_booking/views/login_futsal.dart';
 
-class RegisterFutsal extends StatefulWidget {
-  const RegisterFutsal({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
   static const id = '/register_futsal';
 
   get data => null;
 
   @override
-  State<RegisterFutsal> createState() => _RegisterFutsalState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 
   Object? toJson() {
     return null;
   }
 
-  static Future<RegisterFutsal> fromJson(decode) async {
-    return RegisterFutsal();
+  static Future<RegisterScreen> fromJson(decode) async {
+    return RegisterScreen();
   }
 }
 
-class _RegisterFutsalState extends State<RegisterFutsal> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
@@ -65,7 +66,7 @@ class _RegisterFutsalState extends State<RegisterFutsal> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Pendaftaran berhasil")));
-      PreferenceHandler.saveToken(user?.data?.token.toString() ?? "");
+      PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
       print(user?.toJson());
     } catch (e) {
       print(e);

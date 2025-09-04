@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/navigations/navigation_bar.dart';
+import 'package:futsal_booking/views/admin/add_lapangan.dart';
 import 'package:futsal_booking/views/home_futsal.dart';
 import 'package:futsal_booking/views/lapangan_screen.dart';
 import 'package:futsal_booking/views/login_futsal.dart';
@@ -30,10 +31,17 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash_screen': (context) => const SplashScreen(),
         '/login_futsal': (context) => const LoginFutsal(),
-        '/register_futsal': (context) => const RegisterFutsal(),
+        '/register_futsal': (context) => const RegisterScreen(),
         '/home_futsal': (context) => const Home(),
         '/bot': (context) => Bottom(),
         '/lapangan': (context) => LapanganScreen(),
+        '/add': (context) => AddFieldScreen(
+          onFieldAdded: (field) {
+            // field ini object Field baru yang lu tambah
+            print("Lapangan baru: ${field!.nama}");
+            // misalnya refresh list lapangan atau tambahin ke list
+          },
+        ),
       },
       // home: LoginFutsal(),
       home: Bottom(),

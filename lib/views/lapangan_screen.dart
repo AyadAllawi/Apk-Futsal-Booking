@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:futsal_booking/model/lapangan/field_model.dart';
-import 'package:futsal_booking/services/lapangan/field_services.dart';
+import 'package:futsal_booking/api/register_user.dart';
+import 'package:futsal_booking/model/lapangan/card_user_lapangan.dart';
+import 'package:futsal_booking/views/admin/add_lapangan.dart';
 
 class LapanganScreen extends StatefulWidget {
   const LapanganScreen({super.key});
@@ -10,49 +11,16 @@ class LapanganScreen extends StatefulWidget {
 }
 
 class _LapanganScreenState extends State<LapanganScreen> {
-  List<Field> fields = [];
-  List<Field> filteredFields = [];
-  bool isLoading = true;
+  late Future<SportCard> fieldsFuture;
+  List<Datum> allFields = [];
+  List<Datum> filteredFields = [];
   String selectedFilter = "All";
   String searchQuery = "";
 
   @override
   void initState() {
     super.initState();
-    fetchFields();
-  }
-
-  Future<void> fetchFields() async {
-    try {
-      final List<Field> response = await FieldService.getFields();
-
-      setState(() {
-        fields = response;
-        filteredFields = response;
-        isLoading = false;
-      });
-    } catch (e) {
-      print("Error fetching fields: $e");
-      setState(() => isLoading = false);
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Gagal memuat data lapangan: $e")));
-    }
-  }
-
-  void _deleteField(int id) async {
-    try {
-      await FieldService.deleteField(id);
-      fetchFields();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lapangan berhasil dihapus")),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Gagal menghapus lapangan: $e")));
-    }
+    fieldsFuture = AuthenticationAPI.getFields();
   }
 
   void _applyFilter(String filter) {
@@ -63,31 +31,34 @@ class _LapanganScreenState extends State<LapanganScreen> {
   }
 
   void _filterFields() {
-    List<Field> tempFields = fields;
+    if (allFields.isEmpty) return;
 
+    List<Datum> tempFields = List.from(allFields);
+
+    // Filter berdasarkan status
     if (selectedFilter == "Tersedia") {
-      tempFields = tempFields
-          .where((field) => field.availableSlot > 0)
-          .toList();
+      tempFields = tempFields.where((field) {
+        final price = double.tryParse(field.pricePerHour) ?? 0;
+        return price < 200000;
+      }).toList();
     } else if (selectedFilter == "Penuh") {
-      tempFields = tempFields
-          .where((field) => field.availableSlot == 0)
-          .toList();
+      tempFields = tempFields.where((field) {
+        final price = double.tryParse(field.pricePerHour) ?? 0;
+        return price >= 200000;
+      }).toList();
     }
 
+    // Filter berdasarkan pencarian
     if (searchQuery.isNotEmpty) {
       tempFields = tempFields
           .where(
             (field) =>
-                field.nama.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                field.alamat.toLowerCase().contains(searchQuery.toLowerCase()),
+                field.name.toLowerCase().contains(searchQuery.toLowerCase()),
           )
           .toList();
     }
 
-    setState(() {
-      filteredFields = tempFields;
-    });
+    filteredFields = tempFields;
   }
 
   void _onSearchChanged(String query) {
@@ -97,22 +68,80 @@ class _LapanganScreenState extends State<LapanganScreen> {
     });
   }
 
+  Future<void> _refreshData() async {
+    setState(() {
+      fieldsFuture = AuthenticationAPI.getFields();
+      allFields = [];
+      filteredFields = [];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
+      body: FutureBuilder<SportCard>(
+        future: fieldsFuture,
+        builder: (context, snapshot) {
+          // Handle initial data setup tanpa setState
+          if (snapshot.hasData && allFields.isEmpty) {
+            final sportCard = snapshot.data!;
+            allFields = sportCard.data;
+            _filterFields(); // Filter pertama kali
+          }
+
+          return _buildContent(snapshot);
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigasi ke halaman tambah lapangan
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddFieldScreen(
+                onFieldAdded: (newField) {
+                  setState(() {
+                    allFields.add(newField);
+                    _filterFields();
+                  });
+                },
+              ),
+            ),
+          );
         },
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.yellow.shade700,
+        child: const Icon(Icons.add, color: Colors.black),
       ),
-      body: Column(
+    );
+  }
+
+  Widget _buildContent(AsyncSnapshot<SportCard> snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (snapshot.hasError) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              "Error: ${snapshot.error}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _refreshData,
+              child: const Text("Coba Lagi"),
+            ),
+          ],
+        ),
+      );
+    } else if (snapshot.hasData) {
+      return Column(
         children: [
+          // Header dengan search
           Container(
             height: 210,
             width: double.infinity,
@@ -184,6 +213,7 @@ class _LapanganScreenState extends State<LapanganScreen> {
 
           const SizedBox(height: 12),
 
+          // Filter chips
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -203,34 +233,42 @@ class _LapanganScreenState extends State<LapanganScreen> {
 
           const SizedBox(height: 12),
 
+          // List lapangan
           Expanded(
             child: filteredFields.isEmpty
                 ? const Center(
                     child: Text(
                       "Tidak ada lapangan yang ditemukan",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   )
-                : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: filteredFields.length,
-                    itemBuilder: (context, index) {
-                      final field = filteredFields[index];
-                      return Column(
-                        children: [
-                          _buildLapanganCard(
-                            field: field,
-                            onDelete: () => _deleteField(field.id),
-                          ),
-                          const SizedBox(height: 12),
-                        ],
-                      );
-                    },
+                : RefreshIndicator(
+                    onRefresh: _refreshData,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: filteredFields.length,
+                      itemBuilder: (context, index) {
+                        final field = filteredFields[index];
+                        return Column(
+                          children: [
+                            _buildLapanganCard(field: field),
+                            const SizedBox(height: 12),
+                          ],
+                        );
+                      },
+                    ),
                   ),
           ),
         ],
-      ),
-    );
+      );
+    } else {
+      return const Center(
+        child: Text(
+          "Tidak ada data lapangan",
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
   }
 
   Widget _buildFilterChip(String label, Color bg, Color selectedColor) {
@@ -249,17 +287,25 @@ class _LapanganScreenState extends State<LapanganScreen> {
     );
   }
 
-  Widget _buildLapanganCard({
-    required Field field,
-    required VoidCallback onDelete,
-  }) {
+  Widget _buildLapanganCard({required Datum field}) {
+    final price = double.tryParse(field.pricePerHour) ?? 0;
+    final isAvailable = price < 200000;
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF0C1C3C),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
+          // Gambar lapangan
           Stack(
             children: [
               ClipRRect(
@@ -267,15 +313,38 @@ class _LapanganScreenState extends State<LapanganScreen> {
                   top: Radius.circular(16),
                 ),
                 child: Image.network(
-                  field.imagePath ?? 'https://via.placeholder.com/300x150',
-                  height: 100,
+                  field.imageUrl.isNotEmpty
+                      ? field.imageUrl
+                      : (field.imagePath.isNotEmpty
+                            ? field.imagePath
+                            : 'https://via.placeholder.com/300x150?text=No+Image'),
+                  height: 150,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      height: 100,
+                      height: 150,
                       color: Colors.grey[300],
-                      child: const Icon(Icons.error),
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 150,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -292,17 +361,38 @@ class _LapanganScreenState extends State<LapanganScreen> {
                     color: Colors.yellow,
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  child: const Text(
+                    "0.5 km",
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isAvailable ? Colors.green : Colors.red,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Text(
-                    "${field.jarak} km",
+                    isAvailable ? "Tersedia" : "Penuh",
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ],
           ),
+
+          // Info lapangan
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -312,79 +402,68 @@ class _LapanganScreenState extends State<LapanganScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        field.nama,
+                        field.name,
                         style: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
-                          fontFamily: 'Poppins',
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: onDelete,
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  field.alamat,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                    fontFamily: 'Poppins',
-                  ),
+                const SizedBox(height: 4),
+                const Text(
+                  "Jakarta, Indonesia",
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.star, size: 14, color: Colors.orange),
+                    const Icon(Icons.star, size: 16, color: Colors.orange),
                     const SizedBox(width: 4),
-                    Text(
-                      "${field.rating} (${field.jumlahRating})",
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                    const Text(
+                      "4.5 (120)",
+                      style: TextStyle(fontSize: 12, color: Colors.white),
                     ),
                     const Spacer(),
                     Text(
-                      field.pricePerHour.isNotEmpty
-                          ? field.pricePerHour
-                          : "Rp${field.harga.toStringAsFixed(0)}/jam",
+                      "Rp${field.pricePerHour}/jam",
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                   ],
                 ),
-                const Divider(color: Colors.grey),
-                const SizedBox(height: 6),
+                const Divider(color: Colors.grey, height: 20),
                 Row(
                   children: [
                     Text(
-                      field.availableSlot > 0
-                          ? "Available ${field.availableSlot} Slot Today"
-                          : "Sudah Penuh",
+                      isAvailable ? "Available 5 Slot" : "Sudah Penuh",
                       style: TextStyle(
                         fontSize: 12,
-                        color: field.availableSlot > 0
-                            ? Colors.green
-                            : Colors.red,
-                        fontFamily: 'Poppins',
+                        color: isAvailable ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Spacer(),
                     ElevatedButton(
-                      onPressed: field.availableSlot > 0
+                      onPressed: isAvailable
                           ? () {
-                              // Navigasi ke halaman booking
+                              print(field.name);
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.yellow.shade700,
                         foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                       ),
                       child: const Text("Booking Sekarang"),
                     ),

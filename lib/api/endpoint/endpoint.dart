@@ -3,5 +3,7 @@ class Endpoint {
   static const String register = "$baseURL/register";
   static const String profile = "$baseURL/profile";
   static const String login = "$baseURL/login";
-  static const String field = "$baseURL/fields";
+  static String get getFields => "$baseURL/fields";
+  static String updateField(int id) => "$baseURL/fields/$id";
+  static String deleteField(int id) => "$baseURL/fields/$id";
 }
