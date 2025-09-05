@@ -7,6 +7,7 @@ import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:http/http.dart' as http;
 
 class FieldService {
+  /// ✅ Ambil semua lapangan
   static Future<List<Datum>> getFields() async {
     try {
       final url = Uri.parse(Endpoint.getFields);
@@ -16,9 +17,6 @@ class FieldService {
         throw Exception('Token tidak ditemukan. Silakan login kembali.');
       }
 
-      print('Mengambil data dari: $url');
-      print('Token: $token');
-
       final response = await http
           .get(
             url,
@@ -27,15 +25,23 @@ class FieldService {
               "Authorization": "Bearer $token",
             },
           )
-          .timeout(Duration(seconds: 30));
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final fieldResponse = fieldFromJson(response.body);
-        return fieldResponse.data ?? [];
+
+        // fallback image kalau null
+        final safeData = fieldResponse.data?.map((d) {
+          return d.copyWith(
+            imageUrl:
+                d.imageUrl ??
+                "https://via.placeholder.com/300x200.png?text=No+Image",
+          );
+        }).toList();
+
+        return safeData ?? [];
       } else if (response.statusCode == 401) {
+        await PreferenceHandler.clearToken();
         throw Exception('Token tidak valid. Silakan login kembali.');
       } else {
         throw Exception(
@@ -43,14 +49,14 @@ class FieldService {
         );
       }
     } catch (e) {
-      print('Error dalam getFields: $e');
       throw Exception('Error: $e');
     }
   }
 
+  /// ✅ Hapus lapangan by ID
   static Future<void> deleteField(int id) async {
     try {
-      final url = Uri.parse(Endpoint.getFields);
+      final url = Uri.parse("${Endpoint.getFields}/$id");
       final token = await PreferenceHandler.getToken();
 
       if (token == null || token.isEmpty) {
@@ -65,25 +71,19 @@ class FieldService {
               "Authorization": "Bearer $token",
             },
           )
-          .timeout(Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30));
 
-      print('Delete response: ${response.statusCode} - ${response.body}');
-
-      if (response.statusCode == 200) {
-        // Success
-      } else if (response.statusCode == 401) {
-        throw Exception('Token tidak valid. Silakan login kembali.');
-      } else {
+      if (response.statusCode != 200) {
         throw Exception(
           'Gagal menghapus lapangan: ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
-      print('Error dalam deleteField: $e');
       throw Exception('Error: $e');
     }
   }
 
+  /// ✅ Tambah lapangan
   static Future<void> addField(String name, String pricePerHour) async {
     try {
       final url = Uri.parse(Endpoint.getFields);
@@ -99,8 +99,6 @@ class FieldService {
         'image_path': 'default_image.jpg',
       };
 
-      print('Mengirim data: ${json.encode(requestData)}');
-
       final response = await http
           .post(
             url,
@@ -111,33 +109,33 @@ class FieldService {
             },
             body: json.encode(requestData),
           )
-          .timeout(Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30));
 
-      print('Add response: ${response.statusCode} - ${response.body}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Success
-      } else if (response.statusCode == 401) {
-        throw Exception('Token tidak valid. Silakan login kembali.');
-      } else {
+      if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(
           'Gagal menambah lapangan: ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
-      print('Error dalam addField: $e');
       throw Exception('Error: $e');
     }
   }
 
+  /// ✅ Update lapangan
   static Future<void> updateField(Datum field) async {
     try {
-      final url = Uri.parse(Endpoint.getFields);
+      final url = Uri.parse("${Endpoint.getFields}/${field.id}");
       final token = await PreferenceHandler.getToken();
 
       if (token == null || token.isEmpty) {
         throw Exception('Token tidak ditemukan. Silakan login kembali.');
       }
+
+      final requestData = {
+        'name': field.name,
+        'price_per_hour': field.pricePerHour?.toString() ?? "0",
+        'image_path': field.imagePath ?? "default_image.jpg",
+      };
 
       final response = await http
           .put(
@@ -147,27 +145,16 @@ class FieldService {
               "Authorization": "Bearer $token",
               "Content-Type": "application/json",
             },
-            body: json.encode({
-              'name': field.name,
-              'price_per_hour': field.pricePerHour,
-              'image_path': field.imagePath,
-            }),
+            body: json.encode(requestData),
           )
-          .timeout(Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30));
 
-      print('Update response: ${response.statusCode} - ${response.body}');
-
-      if (response.statusCode == 200) {
-        // Success
-      } else if (response.statusCode == 401) {
-        throw Exception('Token tidak valid. Silakan login kembali.');
-      } else {
+      if (response.statusCode != 200) {
         throw Exception(
           'Gagal mengupdate lapangan: ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
-      print('Error dalam updateField: $e');
       throw Exception('Error: $e');
     }
   }

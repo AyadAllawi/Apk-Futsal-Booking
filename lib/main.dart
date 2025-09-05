@@ -37,9 +37,7 @@ class MyApp extends StatelessWidget {
         '/lapangan': (context) => LapanganScreen(),
         '/add': (context) => AddFieldScreen(
           onFieldAdded: (field) {
-            // field ini object Field baru yang lu tambah
             print("Lapangan baru: ${field!.nama}");
-            // misalnya refresh list lapangan atau tambahin ke list
           },
         ),
       },

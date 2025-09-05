@@ -6,8 +6,8 @@ RegisterFutsal registerFutsalFromJson(String str) =>
 String registerFutsalToJson(RegisterFutsal data) => json.encode(data.toJson());
 
 class RegisterFutsal {
-  String message;
-  Data data;
+  final String message;
+  final Data data;
 
   RegisterFutsal({required this.message, required this.data});
 
@@ -20,8 +20,8 @@ class RegisterFutsal {
 }
 
 class Data {
-  String token;
-  User user;
+  final String token;
+  final User user;
 
   Data({required this.token, required this.user});
 
@@ -32,11 +32,11 @@ class Data {
 }
 
 class User {
-  String name;
-  String email;
-  DateTime updatedAt;
-  DateTime createdAt;
-  int id;
+  final String name;
+  final String email;
+  final DateTime updatedAt;
+  final DateTime createdAt;
+  final int id;
 
   User({
     required this.name,
@@ -57,8 +57,8 @@ class User {
   Map<String, dynamic> toJson() => {
     "name": name,
     "email": email,
-    "updated_at": updatedAt,
-    "created_at": createdAt,
+    "updated_at": updatedAt.toIso8601String(),
+    "created_at": createdAt.toIso8601String(),
     "id": id,
   };
 }

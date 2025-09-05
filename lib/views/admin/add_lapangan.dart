@@ -25,25 +25,21 @@ class _AddFieldScreenState extends State<AddFieldScreen> {
     super.initState();
     if (widget.field != null) {
       _nameController.text = widget.field!.name ?? '';
-      _priceController.text = widget.field!.pricePerHour ?? '';
+      _priceController.text = widget.field!.pricePerHour?.toString() ?? '';
     }
   }
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
       try {
         if (widget.field == null) {
-          // Tambah baru
           await FieldService.addField(
             _nameController.text,
             _priceController.text,
           );
         } else {
-          // Edit existing
           final updatedField = widget.field!.copyWith(
             name: _nameController.text,
             pricePerHour: _priceController.text,
@@ -53,17 +49,15 @@ class _AddFieldScreenState extends State<AddFieldScreen> {
 
         widget.onFieldAdded();
         Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Lapangan berhasil disimpan")),
+        );
+      } catch (e) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text("Lapangan berhasil disimpan")));
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Gagal menyimpan lapangan: ${e.toString()}")),
-        );
+        ).showSnackBar(SnackBar(content: Text("Gagal menyimpan lapangan: $e")));
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -75,51 +69,46 @@ class _AddFieldScreenState extends State<AddFieldScreen> {
         title: Text(widget.field == null ? "Tambah Lapangan" : "Edit Lapangan"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Nama Lapangan",
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama lapangan harus diisi';
-                  }
-                  return null;
-                },
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Nama lapangan harus diisi'
+                    : null,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Harga per Jam",
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty)
                     return 'Harga harus diisi';
-                  }
-                  if (double.tryParse(value) == null) {
+                  if (double.tryParse(value) == null)
                     return 'Harga harus berupa angka';
-                  }
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : ElevatedButton(
                       onPressed: _isLoading ? null : _submitForm,
                       style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
-                      child: Text("Simpan"),
+                      child: const Text("Simpan"),
                     ),
             ],
           ),

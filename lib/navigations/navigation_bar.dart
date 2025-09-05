@@ -30,21 +30,17 @@ class Bottom extends StatelessWidget {
   }
 
   static const List<NavigationDestination> _navDestinations = [
+    NavigationDestination(icon: Icon(Icons.home_rounded), label: 'Home'),
     NavigationDestination(
-      icon: ImageIcon(AssetImage("assets/icons/home.png")),
-      label: 'Home',
-    ),
-    NavigationDestination(
-      icon: ImageIcon(AssetImage("assets/icons/soccer-field.png")),
+      icon: Icon(Icons.sports_soccer), // ganti lapangan
       label: 'Lapangan',
     ),
     NavigationDestination(
-      icon: ImageIcon(AssetImage("assets/icons/booking.png"), size: 28),
-
+      icon: Icon(Icons.book_online), // ganti booking
       label: 'Pemesanan',
     ),
     NavigationDestination(
-      icon: ImageIcon(AssetImage("assets/icons/user.png")),
+      icon: Icon(Icons.person), // ganti profile
       label: 'Profile',
     ),
   ];

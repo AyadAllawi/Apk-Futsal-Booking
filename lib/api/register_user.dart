@@ -32,16 +32,19 @@ class AuthenticationAPI {
         json.decode(response.body),
       );
 
-      // SIMPAN TOKEN dan USER ID setelah register berhasil
-      await PreferenceHandler.saveToken(registerUserModel.data.token);
-      await PreferenceHandler.saveUserId(registerUserModel.data.user.id);
-      await PreferenceHandler.saveUserData(
-        registerUserModel.data.user.name,
-        registerUserModel.data.user.email,
-      );
+      final token = registerUserModel.data.token;
+      final user = registerUserModel.data.user;
+
+      if (token.isEmpty) {
+        throw Exception("Token tidak ditemukan di response register");
+      }
+
+      await PreferenceHandler.saveToken(token);
+      await PreferenceHandler.saveUserId(user.id);
+      await PreferenceHandler.saveUserData(user.name, user.email);
       await PreferenceHandler.saveLogin(true);
 
-      print('Registration successful, token saved');
+      print('✅ Registration successful, token saved');
       return registerUserModel;
     } else {
       final error = json.decode(response.body);
@@ -70,15 +73,19 @@ class AuthenticationAPI {
         json.decode(response.body),
       );
 
-      await PreferenceHandler.saveToken(registerUserModel.data.token);
-      await PreferenceHandler.saveUserId(registerUserModel.data.user.id);
-      await PreferenceHandler.saveUserData(
-        registerUserModel.data.user.name,
-        registerUserModel.data.user.email,
-      );
+      final token = registerUserModel.data.token;
+      final user = registerUserModel.data.user;
+
+      if (token.isEmpty) {
+        throw Exception("Token tidak ditemukan di response login");
+      }
+
+      await PreferenceHandler.saveToken(token);
+      await PreferenceHandler.saveUserId(user.id);
+      await PreferenceHandler.saveUserData(user.name, user.email);
       await PreferenceHandler.saveLogin(true);
 
-      print('Login successful, token saved');
+      print('✅ Login successful, token saved');
       return registerUserModel;
     } else {
       final error = json.decode(response.body);
@@ -98,7 +105,7 @@ class AuthenticationAPI {
       }
 
       print('Mengambil data dari: $url');
-      print('Token length: ${token.length}');
+      print('Token dipakai: $token');
 
       final response = await http
           .get(
@@ -116,7 +123,6 @@ class AuthenticationAPI {
       if (response.statusCode == 200) {
         return sportCardFromJson(response.body);
       } else if (response.statusCode == 401) {
-        // Clear token jika unauthorized
         await PreferenceHandler.clearToken();
         throw Exception('Token tidak valid. Silakan login kembali.');
       } else {
@@ -130,10 +136,13 @@ class AuthenticationAPI {
     }
   }
 
-  /// ✅ Get Field Details by ID
   static Future<Datum> getFieldById(int fieldId) async {
     final url = Uri.parse('${Endpoint.getFields}/$fieldId');
     final token = await PreferenceHandler.getToken();
+
+    if (token == null || token.isEmpty) {
+      throw Exception("Token tidak ditemukan. Silakan login kembali.");
+    }
 
     final response = await http.get(
       url,

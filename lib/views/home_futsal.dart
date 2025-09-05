@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking/preference/shared_preference.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,7 +15,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    // futureName = AuthenticationAPI.getUserName();
+    futureName = PreferenceHandler.getUserName();
   }
 
   @override
