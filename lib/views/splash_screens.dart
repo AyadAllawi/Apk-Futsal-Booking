@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking/navigations/navigation_bar.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
-import 'package:futsal_booking/views/home_futsal.dart';
 import 'package:futsal_booking/views/logreg.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (isLogin == true) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => Home()),
+          MaterialPageRoute(builder: (_) => Bottom()),
         );
       } else {
         Navigator.pushReplacement(

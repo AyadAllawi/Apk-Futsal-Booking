@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/api/register_user.dart';
 import 'package:futsal_booking/model/lapangan/card_user_lapangan.dart';
-import 'package:futsal_booking/views/admin/add_lapangan.dart';
 
 class LapanganScreen extends StatefulWidget {
   const LapanganScreen({super.key});
@@ -10,7 +9,8 @@ class LapanganScreen extends StatefulWidget {
   State<LapanganScreen> createState() => _LapanganScreenState();
 }
 
-class _LapanganScreenState extends State<LapanganScreen> {
+class _LapanganScreenState extends State<LapanganScreen>
+    with SingleTickerProviderStateMixin {
   late Future<SportCard> fieldsFuture;
   List<Datum> allFields = [];
   List<Datum> filteredFields = [];
@@ -35,7 +35,6 @@ class _LapanganScreenState extends State<LapanganScreen> {
 
     List<Datum> tempFields = List.from(allFields);
 
-    // Filter berdasarkan status
     if (selectedFilter == "Tersedia") {
       tempFields = tempFields.where((field) {
         final price = double.tryParse(field.pricePerHour ?? "0") ?? 0;
@@ -48,7 +47,6 @@ class _LapanganScreenState extends State<LapanganScreen> {
       }).toList();
     }
 
-    // Filter berdasarkan pencarian
     if (searchQuery.isNotEmpty) {
       tempFields = tempFields
           .where(
@@ -80,137 +78,163 @@ class _LapanganScreenState extends State<LapanganScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0A1847),
-        elevation: 0,
-        title: const Text(
-          "Pilihan Lapangan!",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              onChanged: _onSearchChanged,
-              style: const TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                hintText: "Cari Lapangan di Jakarta",
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 0,
+      body: SafeArea(
+        child: Column(
+          children: [
+            /// 🔹 Header biru
+            Container(
+              padding: const EdgeInsets.only(
+                top: 20,
+                left: 16,
+                right: 16,
+                bottom: 20,
+              ),
+              decoration: const BoxDecoration(
+                color: Color(0xFF0A1847),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(24),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Bar atas
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Pilihan Lapangan!",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.notifications_none,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Search bar
+                  TextField(
+                    onChanged: _onSearchChanged,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: "Cari Lapangan di Jakarta",
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 0,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 🔹 Filter Tabs warna-warni
+                  Row(
+                    children: [
+                      _buildFilterChip("All", "Semua", Colors.blue),
+                      const SizedBox(width: 8),
+                      _buildFilterChip("Tersedia", "Tersedia", Colors.green),
+                      const SizedBox(width: 8),
+                      _buildFilterChip("Penuh", "Penuh", Colors.red),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
-      ),
-      body: FutureBuilder<SportCard>(
-        future: fieldsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && allFields.isEmpty) {
-            allFields = snapshot.data!.data;
-            _filterFields();
-          }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.yellow),
-            );
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (filteredFields.isEmpty) {
-            return const Center(
-              child: Text(
-                "Tidak ada lapangan",
-                style: TextStyle(color: Colors.black54),
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              // Filter chips
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    buildFilterChip("All"),
-                    const SizedBox(width: 10),
-                    buildFilterChip("Tersedia"),
-                    const SizedBox(width: 10),
-                    buildFilterChip("Penuh"),
-                  ],
-                ),
-              ),
-
-              // List Lapangan
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _refreshData,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: filteredFields.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildLapanganCard(field: filteredFields[index]),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddFieldScreen(
-                onFieldAdded: (newField) {
-                  setState(() {
-                    allFields.add(newField);
+            /// 🔹 Body (FutureBuilder isi lapangan)
+            Expanded(
+              child: FutureBuilder<SportCard>(
+                future: fieldsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && allFields.isEmpty) {
+                    allFields = snapshot.data!.data;
                     _filterFields();
-                  });
+                  }
+
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.yellow),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Error: ${snapshot.error}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  } else if (filteredFields.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "Tidak ada lapangan",
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: _refreshData,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      itemCount: filteredFields.length,
+                      itemBuilder: (context, index) {
+                        return AnimatedSlide(
+                          offset: const Offset(0, 0.2),
+                          duration: Duration(milliseconds: 400 + (index * 100)),
+                          curve: Curves.easeOut,
+                          child: AnimatedOpacity(
+                            opacity: 1,
+                            duration: Duration(
+                              milliseconds: 400 + (index * 100),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _buildLapanganCard(
+                                field: filteredFields[index],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
                 },
               ),
             ),
-          );
-        },
-        backgroundColor: Colors.yellow.shade700,
-        child: const Icon(Icons.add, color: Colors.black),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildFilterChip(String label) {
-    bool isSelected = selectedFilter == label;
+  /// 🔹 Custom Filter Chip (warna-warni)
+  Widget _buildFilterChip(String value, String label, Color color) {
+    bool isSelected = selectedFilter == value;
     return GestureDetector(
-      onTap: () => _applyFilter(label),
+      onTap: () => _applyFilter(value),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.yellow[700] : Colors.grey[300],
-          borderRadius: BorderRadius.circular(20),
+          color: isSelected ? color : Colors.grey[300],
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
           label,
@@ -223,11 +247,8 @@ class _LapanganScreenState extends State<LapanganScreen> {
     );
   }
 
+  /// 🔹 Card Lapangan
   Widget _buildLapanganCard({required Datum field}) {
-    final price = double.tryParse(field.pricePerHour ?? "0") ?? 0;
-    final isAvailable = price < 200000;
-
-    // pilih gambar aman
     final imageSource = (field.imageUrl ?? "").isNotEmpty
         ? field.imageUrl!
         : (field.imagePath ?? "").isNotEmpty
@@ -237,39 +258,30 @@ class _LapanganScreenState extends State<LapanganScreen> {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF0A1847),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 6,
+            offset: const Offset(2, 4),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Gambar
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: (imageSource.isNotEmpty)
-                      ? Image.network(
-                          imageSource,
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              "assets/images/foto/placeholder.png",
-                              width: 90,
-                              height: 90,
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        )
-                      : Image.asset(
-                          "assets/images/foto/placeholder.png",
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                        ),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    imageSource,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Positioned(
                   top: 6,
@@ -280,15 +292,15 @@ class _LapanganScreenState extends State<LapanganScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: isAvailable ? Colors.green : Colors.red,
-                      borderRadius: BorderRadius.circular(6),
+                      color: Colors.yellow[700],
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
-                      isAvailable ? "Tersedia" : "Penuh",
-                      style: const TextStyle(
-                        fontSize: 12,
+                    child: const Text(
+                      "1.6 km",
+                      style: TextStyle(
+                        fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -307,53 +319,26 @@ class _LapanganScreenState extends State<LapanganScreen> {
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    "Jakarta, Indonesia",
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 16),
                       const SizedBox(width: 4),
                       const Text(
                         "4.2 (40)",
-                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const Spacer(),
                       Text(
-                        "Rp${field.pricePerHour ?? "-"} /jam",
+                        "${field.pricePerHour ?? "0"} / jam",
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.yellow,
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        isAvailable ? "Available 5 Slot" : "Sudah Penuh",
-                        style: TextStyle(
-                          color: isAvailable ? Colors.green : Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: isAvailable ? () {} : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.yellow.shade700,
-                          foregroundColor: Colors.black,
-                        ),
-                        child: const Text("Booking"),
                       ),
                     ],
                   ),

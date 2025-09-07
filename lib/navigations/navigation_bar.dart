@@ -53,6 +53,6 @@ class NavigationController extends GetxController {
     const Home(),
     const LapanganScreen(),
     Pemesanan(),
-    Profile(),
+    ProfilePage(),
   ];
 }

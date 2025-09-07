@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:futsal_booking/model/lapangan/field_model.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
+import 'package:futsal_booking/services/lapangan/field_services.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -11,83 +13,94 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String selectedFilter = "All";
   late Future<String?> futureName;
+  late Future<List<Datum>> futureFields;
 
   @override
   void initState() {
     super.initState();
     futureName = PreferenceHandler.getUserName();
+    futureFields = FieldService.getFields();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0C1C3C),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 🔹 Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const CircleAvatar(backgroundColor: Colors.grey),
-                      const SizedBox(width: 15),
-                      FutureBuilder<String?>(
-                        future: futureName,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Text(
-                              "Hi, ...",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Text(
-                              "Hi, Error",
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            );
-                          } else {
-                            return Text(
-                              "Hi, ${snapshot.data ?? "User"}",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  const Icon(
-                    Icons.notifications_none,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ],
+            /// 🔹 HEADER
+            Container(
+              padding: const EdgeInsets.only(
+                top: 20,
+                left: 16,
+                right: 16,
+                bottom: 20,
               ),
-            ),
-
-            /// 🔹 Search Box
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: const BoxDecoration(
+                color: Color(0xFF0A1847),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(24),
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 10),
+                  /// Header row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const CircleAvatar(backgroundColor: Colors.grey),
+                          const SizedBox(width: 15),
+                          FutureBuilder<String?>(
+                            future: futureName,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Text(
+                                  "Hi, ...",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return const Text(
+                                  "Hi, Error",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              } else {
+                                return Text(
+                                  "Hi, ${snapshot.data ?? "User"}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      const Icon(
+                        Icons.notifications_none,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  /// Search
                   const Text(
                     "Mau sewa lapangan dimana?",
                     style: TextStyle(
@@ -97,14 +110,14 @@ class _HomeState extends State<Home> {
                       fontFamily: 'Poppins',
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1C2C4C),
+                            color: Color(0xFF1C2C4C),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const TextField(
@@ -125,7 +138,7 @@ class _HomeState extends State<Home> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1C2C4C),
+                          color: Color(0xFF1C2C4C),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Row(
@@ -140,104 +153,58 @@ class _HomeState extends State<Home> {
                       ),
                     ],
                   ),
+
+                  const SizedBox(height: 16),
+
+                  /// Filter
+                  Row(
+                    children: [
+                      _buildFilterChip("All", "Semua", Colors.blue),
+                      const SizedBox(width: 8),
+                      _buildFilterChip("Tersedia", "Tersedia", Colors.green),
+                      const SizedBox(width: 8),
+                      _buildFilterChip("Penuh", "Penuh", Colors.red),
+                    ],
+                  ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            /// 🔹 Filter
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  _buildFilterChip(
-                    "All",
-                    "Semua",
-                    Colors.grey[300]!,
-                    Colors.grey[600]!,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildFilterChip(
-                    "Tersedia",
-                    "Tersedia",
-                    Colors.green,
-                    Colors.green,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildFilterChip("Penuh", "Penuh", Colors.red, Colors.red),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 Scrollable Content
+            /// 🔹 BODY
             Expanded(
               child: Container(
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 201, 201, 201),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-                ),
-                child: ListView(
-                  padding: const EdgeInsets.all(15),
-                  children: [
-                    /// Rekomendasi
-                    const Text(
-                      "Rekomendasi untuk kamu",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildLapanganCard(
-                      nama: "CGV Sport Hall FX",
-                      alamat: "Jl. Jend. Sudirman No.25",
-                      rating: 4.2,
-                      harga: "300k/jam",
-                      jarak: "1.6 km",
-                      image: "assets/images/foto/lapangan1.jpg",
-                    ),
-                    const SizedBox(height: 12),
-                    _buildLapanganCard(
-                      nama: "Futsal Cilandak",
-                      alamat: "Jl. TB Simatupang",
-                      rating: 4.5,
-                      harga: "350k/jam",
-                      jarak: "2.5 km",
-                      image: "assets/images/foto/lapangan2.jpg",
-                    ),
+                color: const Color(0xFFF3F3F3),
+                child: FutureBuilder<List<Datum>>(
+                  future: futureFields,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          "Error: ${snapshot.error}",
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text("Tidak ada data lapangan"),
+                      );
+                    }
 
-                    const SizedBox(height: 20),
-
-                    /// Favorit
-                    const Text(
-                      "Lapangan Favorit",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildLapanganCard(
-                      nama: "CGV Sport Hall FX",
-                      alamat: "Jl. Jend. Sudirman No.25",
-                      rating: 4.2,
-                      harga: "300k/jam",
-                      jarak: "1.6 km",
-                      image: "assets/images/foto/lapangan1.jpg",
-                    ),
-                    const SizedBox(height: 12),
-                    _buildLapanganCard(
-                      nama: "Futsal Cilandak",
-                      alamat: "Jl. TB Simatupang",
-                      rating: 4.5,
-                      harga: "350k/jam",
-                      jarak: "2.5 km",
-                      image: "assets/images/foto/lapangan2.jpg",
-                    ),
-                  ],
+                    final fields = snapshot.data!;
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: fields.length,
+                      itemBuilder: (context, index) {
+                        final field = fields[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildLapanganCard(field: field),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ),
@@ -247,44 +214,34 @@ class _HomeState extends State<Home> {
     );
   }
 
-  /// 🔹 Widget FilterChip Builder
-  Widget _buildFilterChip(
-    String value,
-    String label,
-    Color selectedColor,
-    Color bgColor,
-  ) {
+  /// 🔹 FilterChip
+  Widget _buildFilterChip(String value, String label, Color color) {
     return FilterChip(
       label: Text(label),
       selected: selectedFilter == value,
-      onSelected: (_) {
-        setState(() {
-          selectedFilter = value;
-        });
-      },
+      onSelected: (_) => setState(() => selectedFilter = value),
       backgroundColor: Colors.grey[300],
-      selectedColor: selectedColor,
+      selectedColor: color,
       checkmarkColor: Colors.white,
       labelStyle: TextStyle(
         color: selectedFilter == value ? Colors.white : Colors.black,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
     );
   }
 
-  /// 🔹 Widget Card Lapangan
-  Widget _buildLapanganCard({
-    required String nama,
-    required String alamat,
-    required double rating,
-    required String harga,
-    required String jarak,
-    required String image,
-  }) {
+  /// 🔹 Card Lapangan
+  Widget _buildLapanganCard({required Datum field}) {
+    final imageSource = (field.imageUrl ?? "").isNotEmpty
+        ? field.imageUrl!
+        : (field.imagePath ?? "").isNotEmpty
+        ? field.imagePath!
+        : "https://via.placeholder.com/300x200.png?text=No+Image";
+
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1C2C4C),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -299,78 +256,52 @@ class _HomeState extends State<Home> {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Stack(
-              children: [
-                Image.asset(
-                  image,
-                  height: 100,
+            child: Image.network(
+              imageSource,
+              height: 120,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.network(
+                  "https://via.placeholder.com/300x200.png?text=No+Image",
+                  height: 120,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                ),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 145, 206, 4),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      jarak,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
-
-          /// Info Lapangan
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  nama,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                // Text(
+                //   field.name,
+                //   style: const TextStyle(
+                //     fontSize: 14,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                const Text(
+                  "Alamat belum ada", // ganti kalau API ada alamat
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-                Text(
-                  alamat,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const Divider(color: Colors.grey),
-                const SizedBox(height: 4),
+                const Divider(),
                 Row(
                   children: [
                     const Icon(Icons.star, size: 14, color: Colors.orange),
                     const SizedBox(width: 4),
-                    Text(
-                      rating.toString(),
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
-                    ),
+                    const Text(
+                      "4.5",
+                      style: TextStyle(fontSize: 12),
+                    ), // dummy rating sementara
                     const Spacer(),
                     Text(
-                      harga,
+                      "${field.pricePerHour ?? '0'}/jam",
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                       ),
                     ),
                   ],
