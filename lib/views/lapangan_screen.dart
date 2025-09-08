@@ -164,7 +164,7 @@ class _LapanganScreenState extends State<LapanganScreen>
                 future: fieldsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && allFields.isEmpty) {
-                    allFields = snapshot.data!.data;
+                    allFields = snapshot.data!.data; // ✅ isi List<Field>
                     _filterFields();
                   }
 
@@ -264,8 +264,8 @@ class _LapanganScreenState extends State<LapanganScreen>
     final imageSource = (field.imageUrl ?? "").isNotEmpty
         ? field.imageUrl!
         : (field.imagePath ?? "").isNotEmpty
-        ? field.imagePath!
-        : "https://via.placeholder.com/300x200.png?text=No+Image";
+            ? field.imagePath!
+            : "https://via.placeholder.com/300x200.png?text=No+Image";
 
     return Container(
       decoration: BoxDecoration(
@@ -340,7 +340,7 @@ class _LapanganScreenState extends State<LapanganScreen>
                       const Icon(Icons.star, color: Colors.amber, size: 16),
                       const SizedBox(width: 4),
                       const Text(
-                        "4.2 (40)",
+                        "4.2 (40)", // dummy rating
                         style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
                       const Spacer(),

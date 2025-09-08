@@ -1,17 +1,22 @@
 class Endpoint {
   static const String baseURL = "https://appfutsal.mobileprojp.com/api";
 
-  // 🔹 Auth
+  // Auth
   static const String register = "$baseURL/register";
   static const String profile = "$baseURL/profile";
   static const String login = "$baseURL/login";
 
-  // 🔹 Field
+  // Fields
   static String get getFields => "$baseURL/fields";
   static String updateField(int id) => "$baseURL/fields/$id";
   static String deleteField(int id) => "$baseURL/fields/$id";
 
-  // 🔹 Booking & Schedule
-  static String get createSchedule => "$baseURL/schedules";
-  static String get createBooking => "$baseURL/bookings";
+  // Schedule
+  static String schedulesByField(int fieldId) => "$baseURL/fields/$fieldId/schedules";
+  static const String createSchedule = "$baseURL/schedules";
+
+  // Booking
+  static const String createBooking = "$baseURL/bookings";
+  static const String myBookings = "$baseURL/my-bookings";
+  static String cancelBooking(int id) => "$baseURL/bookings/$id";
 }

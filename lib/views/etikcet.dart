@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'package:futsal_booking/model/lapangan/booking_model.dart';
+import 'package:intl/intl.dart';
+
 class ETiketPage extends StatelessWidget {
-  const ETiketPage({super.key});
+  final Booking booking;
+  
+  const ETiketPage({super.key, required this.booking});
 
   @override
   Widget build(BuildContext context) {
+    // Format tanggal untuk display
+    final formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.parse(booking.date));
+    
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -28,8 +36,8 @@ class ETiketPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     "Kode Booking",
                     style: TextStyle(
                       fontSize: 14,
@@ -37,10 +45,10 @@ class ETiketPage extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
-                    "ABC123XYZ",
-                    style: TextStyle(
+                    "BK${booking.id.toString().padLeft(6, '0')}",
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
@@ -71,32 +79,41 @@ class ETiketPage extends StatelessWidget {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
+                  children: [
+                    const Text(
                       "Detail Pemesanan",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Divider(height: 24, thickness: 1),
+                    const Divider(height: 24, thickness: 1),
 
                     Text(
-                      "Sport Hall: CGV Sport Hall FX",
-                      style: TextStyle(fontSize: 14),
+                      "Lapangan: ${booking.fieldName ?? 'Lapangan ${booking.fieldId}'}",
+                      style: const TextStyle(fontSize: 14),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      "Lapangan: Lapangan 2",
-                      style: TextStyle(fontSize: 14),
+                      "Tanggal: $formattedDate",
+                      style: const TextStyle(fontSize: 14),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      "Tanggal: Sabtu, 3 Januari 2023",
-                      style: TextStyle(fontSize: 14),
+                      "Jam: ${booking.startTime} - ${booking.endTime}",
+                      style: const TextStyle(fontSize: 14),
                     ),
-                    SizedBox(height: 8),
-                    Text("Jam: 18.00 - 19.00", style: TextStyle(fontSize: 14)),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Status: ${booking.startTime}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: booking.startTime == "confirmed" 
+                            ? Colors.green 
+                            : Colors.orange,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -104,7 +121,7 @@ class ETiketPage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // 🔹 QR Code Dummy
+            // 🔹 QR Code Dummy (bisa diganti dengan QR code berdasarkan booking ID)
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -118,6 +135,14 @@ class ETiketPage extends StatelessWidget {
                   Text(
                     "Tunjukkan QR Code ini saat check-in",
                     style: TextStyle(color: Colors.grey.shade700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "ID: BK${booking.id.toString().padLeft(6, '0')}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black54,
+                    ),
                   ),
                 ],
               ),
