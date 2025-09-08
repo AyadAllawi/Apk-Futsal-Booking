@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
+import 'package:futsal_booking/views/login_futsal.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -46,12 +47,13 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
           // HEADER
           Container(
             width: double.infinity,
-            height: 220,
+            height: 350,
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
               gradient: LinearGradient(
@@ -69,7 +71,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 55,
                       backgroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
-                          : const AssetImage("assets/default_avatar.png")
+                          : const AssetImage(
+                                  "assets/images/foto/AyadAllawi.jpg",
+                                )
                                 as ImageProvider,
                     ),
                     Positioned(
@@ -146,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
 
-          // BODY INFO
+          // BODY
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(20),
@@ -165,25 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 30),
 
-                // BUTTONS
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0062DD),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  onPressed: () {
-                    // TODO: Arahkan ke halaman Edit Profile
-                  },
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                  label: const Text(
-                    "Edit Profile",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-                const SizedBox(height: 12),
+                // LOGOUT BUTTON
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.redAccent),
@@ -195,7 +181,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () async {
                     await PreferenceHandler.clearToken();
                     await PreferenceHandler.saveLogin(false);
-                    // TODO: Arahkan ke halaman Login
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginFutsal(),
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.logout, color: Colors.redAccent),
                   label: const Text(

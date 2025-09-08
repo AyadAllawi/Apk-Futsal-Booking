@@ -136,7 +136,7 @@ class AuthenticationAPI {
     }
   }
 
-  static Future<Datum> getFieldById(int fieldId) async {
+  static Future<Field> getFieldById(int fieldId) async {
     final url = Uri.parse('${Endpoint.getFields}/$fieldId');
     final token = await PreferenceHandler.getToken();
 
@@ -151,7 +151,7 @@ class AuthenticationAPI {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
-      return Datum.fromJson(responseData['data']);
+      return Field.fromJson(responseData['data']);
     } else {
       final error = json.decode(response.body);
       throw Exception(error["message"] ?? "Gagal ambil detail lapangan");

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:futsal_booking/api/register_user.dart';
 import 'package:futsal_booking/model/lapangan/card_user_lapangan.dart';
+import 'package:futsal_booking/views/detail_field.dart';
 
 class LapanganScreen extends StatefulWidget {
   const LapanganScreen({super.key});
@@ -12,8 +13,8 @@ class LapanganScreen extends StatefulWidget {
 class _LapanganScreenState extends State<LapanganScreen>
     with SingleTickerProviderStateMixin {
   late Future<SportCard> fieldsFuture;
-  List<Datum> allFields = [];
-  List<Datum> filteredFields = [];
+  List<Field> allFields = [];
+  List<Field> filteredFields = [];
   String selectedFilter = "All";
   String searchQuery = "";
 
@@ -33,7 +34,7 @@ class _LapanganScreenState extends State<LapanganScreen>
   void _filterFields() {
     if (allFields.isEmpty) return;
 
-    List<Datum> tempFields = List.from(allFields);
+    List<Field> tempFields = List.from(allFields);
 
     if (selectedFilter == "Tersedia") {
       tempFields = tempFields.where((field) {
@@ -196,6 +197,8 @@ class _LapanganScreenState extends State<LapanganScreen>
                       ),
                       itemCount: filteredFields.length,
                       itemBuilder: (context, index) {
+                        final field = filteredFields[index];
+
                         return AnimatedSlide(
                           offset: const Offset(0, 0.2),
                           duration: Duration(milliseconds: 400 + (index * 100)),
@@ -207,8 +210,18 @@ class _LapanganScreenState extends State<LapanganScreen>
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 16),
-                              child: _buildLapanganCard(
-                                field: filteredFields[index],
+
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          LapanganDetailPage(field: field),
+                                    ),
+                                  );
+                                },
+                                child: _buildLapanganCard(field: field),
                               ),
                             ),
                           ),
@@ -225,7 +238,6 @@ class _LapanganScreenState extends State<LapanganScreen>
     );
   }
 
-  /// 🔹 Custom Filter Chip (warna-warni)
   Widget _buildFilterChip(String value, String label, Color color) {
     bool isSelected = selectedFilter == value;
     return GestureDetector(
@@ -248,7 +260,7 @@ class _LapanganScreenState extends State<LapanganScreen>
   }
 
   /// 🔹 Card Lapangan
-  Widget _buildLapanganCard({required Datum field}) {
+  Widget _buildLapanganCard({required Field field}) {
     final imageSource = (field.imageUrl ?? "").isNotEmpty
         ? field.imageUrl!
         : (field.imagePath ?? "").isNotEmpty

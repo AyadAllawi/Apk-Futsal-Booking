@@ -52,7 +52,7 @@ class NavigationController extends GetxController {
   final List<Widget> screens = [
     const Home(),
     const LapanganScreen(),
-    Pemesanan(),
+    PemesananPage(),
     ProfilePage(),
   ];
 }

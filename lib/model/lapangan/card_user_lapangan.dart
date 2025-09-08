@@ -6,14 +6,14 @@ String sportCardToJson(SportCard data) => json.encode(data.toJson());
 
 class SportCard {
   final String message;
-  final List<Datum> data;
+  final List<Field> data;
 
   SportCard({required this.message, required this.data});
 
   factory SportCard.fromJson(Map<String, dynamic> json) => SportCard(
     message: (json["message"] ?? "").toString(),
     data: (json["data"] as List? ?? [])
-        .map((x) => Datum.fromJson(x as Map<String, dynamic>))
+        .map((x) => Field.fromJson(x as Map<String, dynamic>))
         .toList(),
   );
 
@@ -23,7 +23,7 @@ class SportCard {
   };
 }
 
-class Datum {
+class Field {
   final int id;
   final String name;
   final DateTime? createdAt; // <- nullable
@@ -33,7 +33,7 @@ class Datum {
   pricePerHour; // <- nullable (kadang "200.0", kadang null/number)
   final String? imageUrl; // <- nullable
 
-  Datum({
+  Field({
     required this.id,
     required this.name,
     this.createdAt,
@@ -43,7 +43,7 @@ class Datum {
     this.imageUrl,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory Field.fromJson(Map<String, dynamic> json) => Field(
     id: (json["id"] ?? 0) as int,
     name: (json["name"] ?? "").toString(),
     createdAt: json["created_at"] != null

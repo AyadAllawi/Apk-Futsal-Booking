@@ -276,13 +276,16 @@ class _HomeState extends State<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Text(
-                //   field.name,
-                //   style: const TextStyle(
-                //     fontSize: 14,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
+                Text(
+                  (field.name != null && field.name!.isNotEmpty)
+                      ? field.name!
+                      : "Nama tidak tersedia",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
                 const Text(
                   "Alamat belum ada", // ganti kalau API ada alamat
                   style: TextStyle(fontSize: 12, color: Colors.grey),
