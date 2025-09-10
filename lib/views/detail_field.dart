@@ -35,92 +35,96 @@ class _LapanganDetailPageState extends State<LapanganDetailPage> {
   }
 
   Future<void> _pickStartTime() async {
-    final TimeOfDay? picked =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (picked != null) setState(() => selectedStart = picked);
   }
 
   Future<void> _pickEndTime() async {
-    final TimeOfDay? picked =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
     if (picked != null) setState(() => selectedEnd = picked);
   }
 
-Future<void> _submitBooking() async {
-  if (selectedDate == null || selectedStart == null || selectedEnd == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Lengkapi semua data booking!")),
-    );
-    return;
-  }
+  Future<void> _submitBooking() async {
+    if (selectedDate == null || selectedStart == null || selectedEnd == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Lengkapi semua data booking!")),
+      );
+      return;
+    }
 
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  try {
-    final date = DateFormat("yyyy-MM-dd").format(selectedDate!);
-    
-    // ✅ FIX: Convert TimeOfDay to 24-hour format
-    final startTime = _formatTimeOfDayTo24Hour(selectedStart!);
-    final endTime = _formatTimeOfDayTo24Hour(selectedEnd!);
+    try {
+      final date = DateFormat("yyyy-MM-dd").format(selectedDate!);
 
-    print('[DEBUG] Date: $date');
-    print('[DEBUG] Start Time: $startTime');
-    print('[DEBUG] End Time: $endTime');
 
-    // 🔹 Buat schedule di API
-    final schedule = await BookingService.createSchedule(
-      fieldId: widget.field.id,
-      date: date,
-      startTime: startTime,
-      endTime: endTime,
-    );
+      final startTime = _formatTimeOfDayTo24Hour(selectedStart!);
+      final endTime = _formatTimeOfDayTo24Hour(selectedEnd!);
 
-    if (schedule != null) {
-      // 🔹 Ambil user ID dari shared preferences
-      final userId = await PreferenceHandler.getUserId();
-      
-      if (userId == null) {
-        throw Exception("User ID tidak ditemukan. Silakan login kembali.");
-      }
+      print('[DEBUG] Date: $date');
+      print('[DEBUG] Start Time: $startTime');
+      print('[DEBUG] End Time: $endTime');
 
-      // 🔹 Booking dengan user ID yang benar
-      final booking = await BookingService.createBooking(
-        userId: userId,
-        scheduleId: schedule.id,
+
+      final schedule = await BookingService.createSchedule(
+        fieldId: widget.field.id,
+        date: date,
+        startTime: startTime,
+        endTime: endTime,
       );
 
-      if (booking != null) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Booking berhasil dibuat!")),
-  );
-  Navigator.pop(context); 
-  
+      if (schedule != null) {
+   
+        final userId = await PreferenceHandler.getUserId();
+
+        if (userId == null) {
+          throw Exception("User ID tidak ditemukan. Silakan login kembali.");
+        }
+
+      
+        final booking = await BookingService.createBooking(
+          userId: userId,
+          scheduleId: schedule.id,
+        );
+
+        if (booking != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Booking berhasil dibuat!")),
+          );
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Booking Berhasil Dibuat!")),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Gagal membuat booking!")),
+          const SnackBar(content: Text("Gagal membuat schedule!")),
         );
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Gagal membuat schedule!")),
-      );
+    } catch (e) {
+      print('[ERROR] Submit Booking: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    } finally {
+      setState(() => _isLoading = false);
     }
-  } catch (e) {
-    print('[ERROR] Submit Booking: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: $e")),
-    );
-  } finally {
-    setState(() => _isLoading = false);
   }
-}
 
-// ✅ NEW: Helper function to convert TimeOfDay to 24-hour format
-String _formatTimeOfDayTo24Hour(TimeOfDay time) {
-  final hour = time.hour.toString().padLeft(2, '0');
-  final minute = time.minute.toString().padLeft(2, '0');
-  return '$hour:$minute'; // Returns like "22:44"
-}
+  
+  String _formatTimeOfDayTo24Hour(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute'; 
+  }
+
   @override
   Widget build(BuildContext context) {
     final field = widget.field;
@@ -129,13 +133,11 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
       backgroundColor: const Color(0xFF0C1C3C),
       body: Stack(
         children: [
-          // 🔹 Scroll content
           SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 100),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Gambar Lapangan
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20),
@@ -144,19 +146,20 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                   child: Image.network(
                     field.imageUrl ??
                         "https://via.placeholder.com/400x200.png?text=No+Image",
-                    height: 250,
+                    height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
                 ),
 
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 20,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Nama + rating
                       Row(
                         children: [
                           Expanded(
@@ -170,12 +173,18 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.all(6),
+                            padding: const EdgeInsets.all(9),
                             decoration: BoxDecoration(
                               color: Colors.yellow,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Text("1.6 km"),
+                            child: const Text(
+                              "1.6 km",
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -184,14 +193,21 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                         children: const [
                           Icon(Icons.star, color: Colors.amber, size: 18),
                           SizedBox(width: 4),
-                          Text("4.2 (40)",
-                              style: TextStyle(color: Colors.white70)),
+                          Text(
+                            "4.2 (40)",
+                            style: TextStyle(color: Colors.white70),
+                          ),
                           SizedBox(width: 10),
-                          Icon(Icons.local_offer,
-                              color: Colors.orange, size: 18),
+                          Icon(
+                            Icons.local_offer,
+                            color: Colors.orange,
+                            size: 18,
+                          ),
                           SizedBox(width: 4),
-                          Text("10% Discount area",
-                              style: TextStyle(color: Colors.white70)),
+                          Text(
+                            "10% Discount area",
+                            style: TextStyle(color: Colors.white70),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -200,8 +216,11 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.location_on,
-                              color: Colors.white, size: 22),
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.white,
+                            size: 22,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Column(
@@ -212,12 +231,14 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 GestureDetector(
                                   onTap: () async {
                                     final Uri url = Uri.parse(
-                                        "https://maps.google.com/?q=${field.name}");
+                                      "https://maps.google.com/?q=${field.name}",
+                                    );
                                     if (await canLaunchUrl(url)) {
                                       await launchUrl(url);
                                     }
@@ -248,65 +269,100 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                       ),
                       const SizedBox(height: 10),
                       Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: const [
-    Row(
-      children: [
-        Icon(Icons.straighten, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Ukuran : 16.8m x 24.95m", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-    SizedBox(height: 6),
-    Row(
-      children: [
-        Icon(Icons.people, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Kapasitas : 14 orang", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-    SizedBox(height: 6),
-    Row(
-      children: [
-        Icon(Icons.local_parking, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Tempat Parkir", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-    SizedBox(height: 6),
-    Row(
-      children: [
-        Icon(Icons.mosque, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Mushola", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-    SizedBox(height: 6),
-    Row(
-      children: [
-        Icon(Icons.videocam, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Full CCTV", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-    SizedBox(height: 6),
-    Row(
-      children: [
-        Icon(Icons.chair, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Ruang Tunggu", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-    SizedBox(height: 6),
-    Row(
-      children: [
-        Icon(Icons.room_preferences, color: Colors.white70, size: 20),
-        SizedBox(width: 6),
-        Text("Ruang Ganti", style: TextStyle(color: Colors.white70)),
-      ],
-    ),
-  ],
-),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.straighten,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                "Ukuran : 16.8m x 24.95m",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                        
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.local_parking,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                "Tempat Parkir",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.mosque,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                "Mushola",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.videocam,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                "Full CCTV",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.chair,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                "Ruang Tunggu",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.room_preferences,
+                                color: Colors.white70,
+                                size: 20,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                "Ruang Ganti",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: 20),
 
@@ -324,25 +380,31 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
                       ElevatedButton.icon(
                         onPressed: _pickDate,
                         icon: const Icon(Icons.calendar_today),
-                        label: Text(selectedDate == null
-                            ? "Pilih Tanggal"
-                            : DateFormat("yyyy-MM-dd").format(selectedDate!)),
+                        label: Text(
+                          selectedDate == null
+                              ? "Pilih Tanggal"
+                              : DateFormat("yyyy-MM-dd").format(selectedDate!),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
                         onPressed: _pickStartTime,
                         icon: const Icon(Icons.access_time),
-                        label: Text(selectedStart == null
-                            ? "Pilih Jam Mulai"
-                            : selectedStart!.format(context)),
+                        label: Text(
+                          selectedStart == null
+                              ? "Pilih Jam Mulai"
+                              : selectedStart!.format(context),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       ElevatedButton.icon(
                         onPressed: _pickEndTime,
                         icon: const Icon(Icons.access_time_filled),
-                        label: Text(selectedEnd == null
-                            ? "Pilih Jam Selesai"
-                            : selectedEnd!.format(context)),
+                        label: Text(
+                          selectedEnd == null
+                              ? "Pilih Jam Selesai"
+                              : selectedEnd!.format(context),
+                        ),
                       ),
                     ],
                   ),
@@ -351,50 +413,75 @@ String _formatTimeOfDayTo24Hour(TimeOfDay time) {
             ),
           ),
 
-          // 🔹 Bottom Bar
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Rp. ${field.pricePerHour ?? '0'}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _submitBooking,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.yellow[700],
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 14),
-                    ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.black)
-                        : const Text(
-                            "Sewa Sekarang",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                  ),
-                ],
+        
+        Positioned(
+  left: 0,
+  right: 0,
+  bottom: 0,
+  child: Container(
+    padding: const EdgeInsets.all(16),
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// 🔹 Harga per jam
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Harga lapangan perjam",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+                 fontWeight: FontWeight.bold,
               ),
             ),
+            Text(
+              "Rp. ${field.pricePerHour ?? '0'}",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        /// 🔹 Tombol sewa sekarang
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _submitBooking,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.yellow[700],
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: _isLoading
+                ? const CircularProgressIndicator(color: Colors.black)
+                : const Text(
+                    "Sewa Sekarang",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
           ),
+        ),
+      ],
+    ),
+  ),
+),
+
         ],
       ),
     );

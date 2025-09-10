@@ -16,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
   File? _profileImage;
   String? _name;
   String? _email;
-  String? _phone;
+
 
   @override
   void initState() {
@@ -50,14 +50,13 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: const Color(0xFFF5F5F5),
       body: Column(
         children: [
-          // HEADER
           Container(
             width: double.infinity,
-            height: 350,
+            height: 300,
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
               gradient: LinearGradient(
-                colors: [Color(0xFF0062DD), Color(0xFF0C1C3C)],
+                colors: [Color(0xFF0C1C3C), Color(0xFF0C1C3C)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -66,19 +65,38 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Stack(
+                  alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
-                    CircleAvatar(
-                      radius: 55,
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : const AssetImage(
-                                  "assets/images/foto/AyadAllawi.jpg",
-                                )
-                                as ImageProvider,
+                    SizedBox(height: 20),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "Profile",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundImage: _profileImage != null
+                              ? FileImage(_profileImage!)
+                              : const AssetImage(
+                                      "assets/images/foto/AyadAllawi.jpg",
+                                    )
+                                    as ImageProvider,
+                        ),
+                      ],
                     ),
+
+                    // Kamera button tetap di pojok kanan bawah avatar
                     Positioned(
                       bottom: 0,
-                      right: 0,
+                      right: 0, // biar pas di sisi kanan avatar
                       child: GestureDetector(
                         onTap: () {
                           showModalBottomSheet(
@@ -133,6 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 12),
                 Text(
                   _name ?? "Loading...",
@@ -156,20 +175,51 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(20),
               children: [
                 _buildInfoTile(
-                  title: "Phone Number",
-                  value: _phone ?? "-",
-                  icon: Icons.phone,
+                  title: "Profile Saya",
+                  icon: Icons.person,
                 ),
                 const SizedBox(height: 12),
                 _buildInfoTile(
-                  title: "Password",
-                  value: "••••••••",
-                  icon: Icons.lock,
-                  isPassword: true,
+                  title: "Ganti Password",
+                  icon: Icons.lock_reset,
+                ),
+                const SizedBox(height: 12),
+                _buildInfoTile(
+                  title: "Tambahkan metode pembayaran",
+                  icon: Icons.credit_card,
+                ),
+                const SizedBox(height: 12),
+                _buildInfoTile(
+                  title: "Notifikasi",
+                  icon: Icons.notifications,
+                  
+                ),
+                const SizedBox(height: 12),
+                _buildInfoTile(
+                  title: "Bahasa",
+                  icon: Icons.language,
+                  
+                ),
+                SizedBox(height: 10,),
+                Divider(),
+                 const SizedBox(height: 12),
+                _buildInfoTile(
+                  title: "Tentang Aplikasi",
+                  icon: Icons.info,
+                ),
+                 const SizedBox(height: 12),
+                _buildInfoTile(
+                  title: "Privacy Policy",
+                  icon: Icons.privacy_tip,
+                ),
+                 const SizedBox(height: 12),
+                _buildInfoTile(
+                  title: "Pengaturan",
+                  icon: Icons.settings,
                 ),
                 const SizedBox(height: 30),
 
-                // LOGOUT BUTTON
+             
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.redAccent),
@@ -204,7 +254,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildInfoTile({
     required String title,
-    required String value,
     required IconData icon,
     bool isPassword = false,
   }) {
@@ -233,19 +282,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   title,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins'
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
+             
               ],
             ),
           ),

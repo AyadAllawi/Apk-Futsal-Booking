@@ -66,7 +66,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Pendaftaran berhasil")));
+      
       PreferenceHandler.saveToken(user?.data.token.toString() ?? "");
+      Navigator.pushNamed(context, '/login_futsal');
       print(user?.toJson());
     } catch (e) {
       print(e);

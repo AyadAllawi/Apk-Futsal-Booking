@@ -69,14 +69,7 @@ class _LoginFutsalState extends State<LoginFutsal> {
       setState(() {});
       isLoading = false;
     }
-    // final user = User(email: email, password: password, name: name);
-    // await DbHelper.registerUser(user);
-    // Future.delayed(const Duration(seconds: 1)).then((value) {
-    //   isLoading = false;
-    //   ScaffoldMessenger.of(
-    //     context,
-    //   ).showSnackBar(const SnackBar(content: Text("Pendaftaran berhasil")));
-    // });
+    
   }
 
   @override
@@ -97,7 +90,7 @@ class _LoginFutsalState extends State<LoginFutsal> {
             ),
           ),
 
-          // Main Layout
+     
           SafeArea(
             child: Column(
               children: [
@@ -130,7 +123,7 @@ class _LoginFutsalState extends State<LoginFutsal> {
                             ),
                             const SizedBox(height: 30),
 
-                            // ===== Email =====
+                    
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

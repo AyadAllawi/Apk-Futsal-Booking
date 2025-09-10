@@ -28,7 +28,7 @@ class Booking {
   final String date;
   final String startTime;
   final String endTime;
-  final String status; // <- Tambahkan field status
+  final String status; 
 
   Booking({
     required this.id,
@@ -37,18 +37,18 @@ class Booking {
     required this.date,
     required this.startTime,
     required this.endTime,
-    required this.status, // <- Tambahkan di constructor
+    required this.status, 
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
-    return Booking(
-      id: json['id'],
-      fieldId: json['field_id'],
-      fieldName: json['field_name'],
-      date: json['date'],
-      startTime: json['start_time'],
-      endTime: json['end_time'],
-      status: json['status'] ?? 'pending', // <- Default value
-    );
-  }
+  return Booking(
+    id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+    fieldId: int.tryParse(json['field_id']?.toString() ?? '') ?? 0,
+    fieldName: json['field_name'],
+    date: json['date'],
+    startTime: json['start_time'],
+    endTime: json['end_time'],
+    status: json['status'] ?? 'pending',
+  );
+}
 }

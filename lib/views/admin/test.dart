@@ -14,7 +14,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    // futureName = AuthenticationAPI.getUserName();
+  
   }
 
   @override
@@ -25,7 +25,7 @@ class _HomeState extends State<Home> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 🔹 Header
+       
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Row(

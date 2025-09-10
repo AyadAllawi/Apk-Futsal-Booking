@@ -1,4 +1,4 @@
-// field_services.dart
+
 import 'dart:convert';
 
 import 'package:futsal_booking/api/endpoint/endpoint.dart';
@@ -7,7 +7,7 @@ import 'package:futsal_booking/preference/shared_preference.dart';
 import 'package:http/http.dart' as http;
 
 class FieldService {
-  /// ✅ Ambil semua lapangan
+  
   static Future<List<Datum>> getFields() async {
     try {
       final url = Uri.parse(Endpoint.getFields);
@@ -30,7 +30,7 @@ class FieldService {
       if (response.statusCode == 200) {
         final fieldResponse = fieldFromJson(response.body);
 
-        // fallback image kalau null
+    
         final safeData = fieldResponse.data?.map((d) {
           return d.copyWith(
             imageUrl:
@@ -53,7 +53,7 @@ class FieldService {
     }
   }
 
-  /// ✅ Hapus lapangan by ID
+ 
   static Future<void> deleteField(int id) async {
     try {
       final url = Uri.parse("${Endpoint.getFields}/$id");
@@ -83,7 +83,6 @@ class FieldService {
     }
   }
 
-  /// ✅ Tambah lapangan
   static Future<void> addField(String name, String pricePerHour) async {
     try {
       final url = Uri.parse(Endpoint.getFields);
@@ -121,7 +120,7 @@ class FieldService {
     }
   }
 
-  /// ✅ Update lapangan
+
   static Future<void> updateField(Datum field) async {
     try {
       final url = Uri.parse("${Endpoint.getFields}/${field.id}");

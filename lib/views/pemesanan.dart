@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:futsal_booking/model/lapangan/booking_model.dart';
 import 'package:futsal_booking/services/lapangan/booking_services.dart';
 import 'package:futsal_booking/views/etikcet.dart';
@@ -16,6 +15,8 @@ class _PemesananPageState extends State<PemesananPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Future<List<Booking>> _futureBookings;
+
+  int? _loadingCancelId;
 
   @override
   void initState() {
@@ -40,8 +41,6 @@ class _PemesananPageState extends State<PemesananPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // 🔹 AppBar Custom dengan TabBar
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(131),
         child: Container(
@@ -74,8 +73,6 @@ class _PemesananPageState extends State<PemesananPage>
           ),
         ),
       ),
-
-      // 🔹 Body dengan TabBarView
       body: TabBarView(
         controller: _tabController,
         children: [
@@ -86,9 +83,8 @@ class _PemesananPageState extends State<PemesananPage>
     );
   }
 
-  // 🔹 Booking List dari API dengan filter otomatis
   Widget _buildBookingList({required bool isHistory}) {
-    return FutureBuilder<List<Booking>>( // ✅ FIX: Ganti jadi List<Booking>
+    return FutureBuilder<List<Booking>>(
       future: _futureBookings,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -111,23 +107,25 @@ class _PemesananPageState extends State<PemesananPage>
         }
 
         final allBookings = snapshot.data ?? [];
-
-        // 🔹 Filter berdasarkan tanggal
         final now = DateTime.now();
+
         final filteredBookings = allBookings.where((booking) {
           final bookingDate = DateTime.tryParse(booking.date);
           if (bookingDate == null) return false;
           if (isHistory) {
             return bookingDate.isBefore(now);
           } else {
-            return bookingDate.isAtSameMomentAs(now) || bookingDate.isAfter(now);
+            return bookingDate.isAtSameMomentAs(now) ||
+                bookingDate.isAfter(now);
           }
         }).toList();
 
         if (filteredBookings.isEmpty) {
           return Center(
             child: Text(
-              isHistory ? "Belum ada riwayat pemesanan" : "Belum ada pemesanan aktif",
+              isHistory
+                  ? "Belum ada riwayat pemesanan"
+                  : "Belum ada pemesanan aktif",
               style: const TextStyle(fontSize: 16),
             ),
           );
@@ -150,7 +148,6 @@ class _PemesananPageState extends State<PemesananPage>
     );
   }
 
-  // 🔹 Card Pemesanan (style sama)
   Widget _buildBookingCard(Booking booking) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -167,7 +164,7 @@ class _PemesananPageState extends State<PemesananPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header (Nama Lapangan)
+          // Header
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -185,89 +182,182 @@ class _PemesananPageState extends State<PemesananPage>
             ),
           ),
 
-          // Isi Card
+     
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            margin: const EdgeInsets.only(bottom: 1),
             decoration: BoxDecoration(
-              color: Colors.yellow[700],
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(16),
-              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-            child: Row(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.sports_soccer,
-                    size: 36, color: Colors.black87),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+           
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 15,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFD700),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(1),
+                    ),
+                  ),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Tanggal: ${DateFormat('dd MMMM yyyy').format(DateTime.parse(booking.date))}",
-                        style: const TextStyle(
-                            fontSize: 13, color: Colors.black87),
+                      const Icon(
+                        Icons.sports_soccer,
+                        size: 36,
+                        color: Colors.black87,
                       ),
-                      Text(
-                        "Jam: ${booking.startTime} - ${booking.endTime}",
-                        style: const TextStyle(
-                            fontSize: 13, color: Colors.black87),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Tanggal: ${DateFormat('dd MMMM yyyy').format(DateTime.parse(booking.date))}",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                 color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins'
+                              ),
+                            ),
+                            Text(
+                              "Jam: ${booking.startTime} - ${booking.endTime}",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins'
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Status: ${booking.status}",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: booking.status == "confirmed"
+                                    ? Colors.green
+                                    : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins'
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Status: ${booking.status}",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: booking.status == "confirmed" 
-                              ? Colors.green 
-                              : Colors.orange,
-                          fontWeight: FontWeight.bold,
+                     
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 2,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1C1234),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ETiketPage(booking: booking),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            "Lihat E-Tiket",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
+
+   
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1C1234),
-                    borderRadius: BorderRadius.circular(12),
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 1),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(16),
+                    ),
                   ),
-                  child: const Text(
-                    "Chat Penyewa",
-                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  child: Center(
+                    child: TextButton(
+                      onPressed: _loadingCancelId == booking.id
+                          ? null
+                          : () => _cancelBooking(booking.id!),
+                      child: _loadingCancelId == booking.id
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.red,
+                              ),
+                            )
+                          : const Text(
+                              "Batalkan Booking",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-
-          // 🔹 Lihat E-Tiket
-          Center(
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ETiketPage(booking: booking),
-                  ),
-                );
-              },
-              child: const Text(
-                "Lihat E-Tiket",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
+  }
+
+  Future<void> _cancelBooking(int bookingId) async {
+    setState(() {
+      _loadingCancelId = bookingId;
+    });
+
+    final success = await BookingService.cancelBooking(bookingId);
+
+    if (success) {
+      _loadBookings();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Booking berhasil dibatalkan"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Gagal membatalkan booking"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    setState(() {
+      _loadingCancelId = null;
+    });
   }
 }

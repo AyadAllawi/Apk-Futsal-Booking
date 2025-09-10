@@ -82,7 +82,7 @@ class _LapanganScreenState extends State<LapanganScreen>
       body: SafeArea(
         child: Column(
           children: [
-            /// 🔹 Header biru
+        
             Container(
               padding: const EdgeInsets.only(
                 top: 20,
@@ -99,7 +99,7 @@ class _LapanganScreenState extends State<LapanganScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Bar atas
+              
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,7 +122,7 @@ class _LapanganScreenState extends State<LapanganScreen>
                   ),
                   const SizedBox(height: 12),
 
-                  // Search bar
+               
                   TextField(
                     onChanged: _onSearchChanged,
                     style: const TextStyle(color: Colors.black),
@@ -144,7 +144,7 @@ class _LapanganScreenState extends State<LapanganScreen>
                   ),
                   const SizedBox(height: 12),
 
-                  // 🔹 Filter Tabs warna-warni
+      
                   Row(
                     children: [
                       _buildFilterChip("All", "Semua", Colors.blue),
@@ -158,13 +158,13 @@ class _LapanganScreenState extends State<LapanganScreen>
               ),
             ),
 
-            /// 🔹 Body (FutureBuilder isi lapangan)
+ 
             Expanded(
               child: FutureBuilder<SportCard>(
                 future: fieldsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && allFields.isEmpty) {
-                    allFields = snapshot.data!.data; // ✅ isi List<Field>
+                    allFields = snapshot.data!.data; 
                     _filterFields();
                   }
 
@@ -259,7 +259,7 @@ class _LapanganScreenState extends State<LapanganScreen>
     );
   }
 
-  /// 🔹 Card Lapangan
+
   Widget _buildLapanganCard({required Field field}) {
     final imageSource = (field.imageUrl ?? "").isNotEmpty
         ? field.imageUrl!
@@ -283,7 +283,7 @@ class _LapanganScreenState extends State<LapanganScreen>
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            // Gambar
+            
             Stack(
               children: [
                 ClipRRect(
@@ -321,7 +321,7 @@ class _LapanganScreenState extends State<LapanganScreen>
             ),
             const SizedBox(width: 12),
 
-            // Detail
+         
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -334,6 +334,10 @@ class _LapanganScreenState extends State<LapanganScreen>
                       fontSize: 15,
                     ),
                   ),
+                   const Text(
+                  "Jl. Jenderal Sudirman No.25, Tanah Abang, Jakarta Pusat", 
+                  style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
@@ -343,6 +347,7 @@ class _LapanganScreenState extends State<LapanganScreen>
                         "4.2 (40)", // dummy rating
                         style: TextStyle(color: Colors.white70, fontSize: 12),
                       ),
+                      
                       const Spacer(),
                       Text(
                         "${field.pricePerHour ?? "0"} / jam",

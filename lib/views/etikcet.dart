@@ -10,7 +10,7 @@ class ETiketPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Format tanggal untuk display
+
     final formattedDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.parse(booking.date));
     
     return Scaffold(
@@ -27,7 +27,7 @@ class ETiketPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // 🔹 Kode Booking
+      
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -61,7 +61,7 @@ class ETiketPage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // 🔹 Detail Penyewaan
+     
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -121,7 +121,6 @@ class ETiketPage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // 🔹 QR Code Dummy (bisa diganti dengan QR code berdasarkan booking ID)
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(

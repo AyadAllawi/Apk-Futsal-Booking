@@ -39,15 +39,14 @@ class Data {
     this.updatedAt,
   });
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    id: json["id"],
-    name: json["name"],
-    email: json["email"],
-    emailVerifiedAt: json["email_verified_at"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-  );
-
+ factory Data.fromJson(Map<String, dynamic> json) => Data(
+  id: int.tryParse(json["id"]?.toString() ?? '') ?? 0, // Fix disini
+  name: json["name"],
+  email: json["email"],
+  emailVerifiedAt: json["email_verified_at"],
+  createdAt: json["created_at"],
+  updatedAt: json["updated_at"],
+);
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,

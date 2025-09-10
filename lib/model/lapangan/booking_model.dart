@@ -47,15 +47,15 @@ class Booking {
   String get status => "confirmed"; // Default status
 
   factory Booking.fromJson(Map<String, dynamic> json) {
-    return Booking(
-      id: json['id'] ?? 0,
-      userId: json['user_id'] ?? 0,
-      scheduleId: json['schedule_id'] ?? 0,
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
-      schedule: Schedule.fromJson(json['schedule'] ?? {}),
-    );
-  }
+  return Booking(
+    id: int.tryParse(json['id']?.toString() ?? '') ?? 0, // Convert String to int
+    userId: int.tryParse(json['user_id']?.toString() ?? '') ?? 0,
+    scheduleId: int.tryParse(json['schedule_id']?.toString() ?? '') ?? 0,
+    createdAt: json['created_at'] ?? '',
+    updatedAt: json['updated_at'] ?? '',
+    schedule: Schedule.fromJson(json['schedule'] ?? {}),
+  );
+}
 }
 
 class Schedule {
@@ -82,18 +82,18 @@ class Schedule {
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
-    return Schedule(
-      id: json['id'] ?? 0,
-      fieldId: json['field_id'] ?? 0,
-      date: json['date'] ?? '',
-      startTime: json['start_time'] ?? '',
-      endTime: json['end_time'] ?? '',
-      isBooked: json['is_booked'] ?? 0,
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
-      field: Field.fromJson(json['field'] ?? {}),
-    );
-  }
+  return Schedule(
+    id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+    fieldId: int.tryParse(json['field_id']?.toString() ?? '') ?? 0,
+    date: json['date'] ?? '',
+    startTime: json['start_time'] ?? '',
+    endTime: json['end_time'] ?? '',
+    isBooked: int.tryParse(json['is_booked']?.toString() ?? '') ?? 0,
+    createdAt: json['created_at'] ?? '',
+    updatedAt: json['updated_at'] ?? '',
+    field: Field.fromJson(json['field'] ?? {}),
+  );
+}
 }
 
 class Field {
@@ -114,13 +114,13 @@ class Field {
   });
 
   factory Field.fromJson(Map<String, dynamic> json) {
-    return Field(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      createdAt: json['created_at'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
-      imagePath: json['image_path'] ?? '',
-      pricePerHour: json['price_per_hour'] ?? '0',
-    );
-  }
+  return Field(
+    id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+    name: json['name'] ?? '',
+    createdAt: json['created_at'] ?? '',
+    updatedAt: json['updated_at'] ?? '',
+    imagePath: json['image_path'] ?? '',
+    pricePerHour: json['price_per_hour']?.toString() ?? '0', // Pastikan string
+  );
+}
 }

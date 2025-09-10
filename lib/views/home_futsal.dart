@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:futsal_booking/model/lapangan/field_model.dart';
+import 'package:futsal_booking/api/register_user.dart';
+import 'package:futsal_booking/model/lapangan/card_user_lapangan.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
-import 'package:futsal_booking/services/lapangan/field_services.dart';
+import 'package:futsal_booking/views/detail_field.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,14 +13,48 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String selectedFilter = "All";
+  String searchQuery = "";
+
+  late Future<SportCard> futureFields;
   late Future<String?> futureName;
-  late Future<List<Datum>> futureFields;
 
   @override
   void initState() {
     super.initState();
     futureName = PreferenceHandler.getUserName();
-    futureFields = FieldService.getFields();
+    futureFields = AuthenticationAPI.getFields();
+  }
+
+  
+  Future<void> _refreshData() async {
+    setState(() {
+      futureFields = AuthenticationAPI.getFields();
+    });
+  }
+
+ 
+  double _parsePrice(String? price) {
+    return double.tryParse(price ?? "0") ?? 0;
+  }
+
+
+  List<Field> _filterFields(List<Field> fields) {
+    List<Field> tempFields = List.from(fields);
+
+    if (selectedFilter == "Tersedia") {
+      tempFields = tempFields.where((f) => _parsePrice(f.pricePerHour) < 200000).toList();
+    } else if (selectedFilter == "Penuh") {
+      tempFields = tempFields.where((f) => _parsePrice(f.pricePerHour) >= 200000).toList();
+    }
+
+    if (searchQuery.isNotEmpty) {
+      tempFields = tempFields
+          .where((f) =>
+              (f.name ?? "").toLowerCase().contains(searchQuery.toLowerCase()))
+          .toList();
+    }
+
+    return tempFields;
   }
 
   @override
@@ -46,7 +81,7 @@ class _HomeState extends State<Home> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Header row
+               
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -100,7 +135,7 @@ class _HomeState extends State<Home> {
 
                   const SizedBox(height: 16),
 
-                  /// Search
+            
                   const Text(
                     "Mau sewa lapangan dimana?",
                     style: TextStyle(
@@ -120,14 +155,19 @@ class _HomeState extends State<Home> {
                             color: Color(0xFF1C2C4C),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const TextField(
-                            decoration: InputDecoration(
+                          child: TextField(
+                            onChanged: (val) {
+                              setState(() {
+                                searchQuery = val;
+                              });
+                            },
+                            decoration: const InputDecoration(
                               hintText: "Cari Lapangan di Jakarta",
                               hintStyle: TextStyle(color: Colors.grey),
                               border: InputBorder.none,
                               icon: Icon(Icons.search, color: Colors.white),
                             ),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ),
                       ),
@@ -156,7 +196,7 @@ class _HomeState extends State<Home> {
 
                   const SizedBox(height: 16),
 
-                  /// Filter
+          
                   Row(
                     children: [
                       _buildFilterChip("All", "Semua", Colors.blue),
@@ -169,43 +209,58 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-
-            /// 🔹 BODY
+   
+     
             Expanded(
-              child: Container(
-                color: const Color(0xFFF3F3F3),
-                child: FutureBuilder<List<Datum>>(
-                  future: futureFields,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          "Error: ${snapshot.error}",
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(
-                        child: Text("Tidak ada data lapangan"),
-                      );
-                    }
+              child: FutureBuilder<SportCard>(
+                future: futureFields,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Error: ${snapshot.error}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.data.isEmpty) {
+                    return const Center(child: Text("Tidak ada data lapangan"));
+                  }
 
-                    final fields = snapshot.data!;
-                    return ListView.builder(
+             
+                  final filteredFields = _filterFields(snapshot.data!.data);
+
+                  if (filteredFields.isEmpty) {
+                    return const Center(child: Text("Lapangan tidak ditemukan"));
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: _refreshData,
+                    child: ListView.builder(
                       padding: const EdgeInsets.all(16),
-                      itemCount: fields.length,
+                      itemCount: filteredFields.length,
                       itemBuilder: (context, index) {
-                        final field = fields[index];
+                        final field = filteredFields[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: _buildLapanganCard(field: field),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      LapanganDetailPage(field: field),
+                                ),
+                              );
+                            },
+                            child: _buildLapanganCard(field: field),
+                          ),
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -214,12 +269,16 @@ class _HomeState extends State<Home> {
     );
   }
 
-  /// 🔹 FilterChip
+  
   Widget _buildFilterChip(String value, String label, Color color) {
     return FilterChip(
       label: Text(label),
       selected: selectedFilter == value,
-      onSelected: (_) => setState(() => selectedFilter = value),
+      onSelected: (_) {
+        setState(() {
+          selectedFilter = value;
+        });
+      },
       backgroundColor: Colors.grey[300],
       selectedColor: color,
       checkmarkColor: Colors.white,
@@ -231,17 +290,17 @@ class _HomeState extends State<Home> {
     );
   }
 
-  /// 🔹 Card Lapangan
-  Widget _buildLapanganCard({required Datum field}) {
+ 
+  Widget _buildLapanganCard({required Field field}) {
     final imageSource = (field.imageUrl ?? "").isNotEmpty
         ? field.imageUrl!
         : (field.imagePath ?? "").isNotEmpty
-        ? field.imagePath!
-        : "https://via.placeholder.com/300x200.png?text=No+Image";
+            ? field.imagePath!
+            : "https://via.placeholder.com/300x200.png?text=No+Image";
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF0A1847),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -277,18 +336,16 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  (field.name != null && field.name!.isNotEmpty)
-                      ? field.name!
-                      : "Nama tidak tersedia",
-                  style: TextStyle(
-                    color: Colors.black,
+                  field.name.isNotEmpty ? field.name : "Nama tidak tersedia",
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
                 ),
                 const Text(
-                  "Alamat belum ada", // ganti kalau API ada alamat
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  "Jl. Jenderal Sudirman No.25, Tanah Abang, Jakarta Pusat", 
+                  style: TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 const Divider(),
                 Row(
@@ -297,14 +354,15 @@ class _HomeState extends State<Home> {
                     const SizedBox(width: 4),
                     const Text(
                       "4.5",
-                      style: TextStyle(fontSize: 12),
-                    ), // dummy rating sementara
+                      style: TextStyle(fontSize: 12, color: Color(0xFFFFFFFF),),
+                    ), 
                     const Spacer(),
                     Text(
                       "${field.pricePerHour ?? '0'}/jam",
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 234, 255, 0),
                       ),
                     ),
                   ],

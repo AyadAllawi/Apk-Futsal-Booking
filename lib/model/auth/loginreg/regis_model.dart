@@ -47,12 +47,12 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    name: json["name"],
-    email: json["email"],
-    updatedAt: DateTime.parse(json["updated_at"]),
-    createdAt: DateTime.parse(json["created_at"]),
-    id: json["id"],
-  );
+  name: json["name"],
+  email: json["email"],
+  updatedAt: DateTime.parse(json["updated_at"]),
+  createdAt: DateTime.parse(json["created_at"]),
+  id: int.tryParse(json["id"]?.toString() ?? '') ?? 0, // Fix disini
+);
 
   Map<String, dynamic> toJson() => {
     "name": name,

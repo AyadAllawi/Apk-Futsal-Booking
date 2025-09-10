@@ -6,7 +6,7 @@ import 'package:futsal_booking/api/endpoint/endpoint.dart';
 import 'package:futsal_booking/preference/shared_preference.dart';
 
 class BookingService {
-  // Get schedules by fieldId
+ 
   static Future<List<Schedule>> getSchedules(int fieldId) async {
     final token = await PreferenceHandler.getToken();
     
@@ -35,7 +35,6 @@ class BookingService {
     }
   }
 
-  // Create new schedule
   static Future<Schedule?> createSchedule({
     required int fieldId,
     required String date,
@@ -48,7 +47,7 @@ class BookingService {
       throw Exception('Token tidak ditemukan. Silakan login kembali.');
     }
 
-    // ✅ Debug request data
+    
     print('[DEBUG] Schedule Request:');
     print('[DEBUG] - fieldId: $fieldId');
     print('[DEBUG] - date: $date');
@@ -78,7 +77,7 @@ class BookingService {
       final body = json.decode(response.body);
       return Schedule.fromJson(body["data"]);
     } else {
-      // ✅ Tampilkan error detail dari server
+     
       try {
         final errorBody = json.decode(response.body);
         throw Exception(errorBody["message"] ?? "Gagal membuat schedule");
@@ -88,7 +87,7 @@ class BookingService {
     }
   }
 
-  // Create booking
+ 
   static Future<Booking?> createBooking({
     required int userId,
     required int scheduleId,
@@ -117,15 +116,13 @@ class BookingService {
     print('[POST] Response body: ${response.body}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      // ✅ Success create booking, tapi response tidak punya data relational
-      // Jadi kita perlu fetch ulang data bookings untuk mendapatkan data lengkap
-      // Atau langsung navigate ke halaman pemesanan yang akan auto-refresh
-      return null; // Return null karena data tidak lengkap
+     
+      return null; 
     }
     return null;
   }
 
-  // Get my bookings
+
   static Future<List<Booking>> getMyBookings() async {
     final token = await PreferenceHandler.getToken();
     
@@ -158,23 +155,26 @@ class BookingService {
     }
   }
 
-  // Cancel booking
-  static Future<bool> cancelBooking(int id) async {
+
+  static Future<bool> cancelBooking(int bookingId) async {
     final token = await PreferenceHandler.getToken();
-    
+
     if (token == null || token.isEmpty) {
       throw Exception('Token tidak ditemukan. Silakan login kembali.');
     }
 
+    final url = Uri.parse("${Endpoint.baseURL}/bookings/$bookingId");
+    print('[DELETE] Cancel booking: $url');
+
     final response = await http.delete(
-      Uri.parse(Endpoint.cancelBooking(id)),
+      url,
       headers: {
         "Accept": "application/json",
         "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
       },
     );
 
-    print('[DELETE] Cancel booking: ${Endpoint.cancelBooking(id)}');
     print('[DELETE] Response status: ${response.statusCode}');
     print('[DELETE] Response body: ${response.body}');
 

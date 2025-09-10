@@ -44,18 +44,18 @@ class Field {
   });
 
   factory Field.fromJson(Map<String, dynamic> json) => Field(
-    id: (json["id"] ?? 0) as int,
-    name: (json["name"] ?? "").toString(),
-    createdAt: json["created_at"] != null
-        ? DateTime.tryParse(json["created_at"].toString())
-        : null,
-    updatedAt: json["updated_at"] != null
-        ? DateTime.tryParse(json["updated_at"].toString())
-        : null,
-    imagePath: json["image_path"] as String?, // bisa null
-    pricePerHour: json["price_per_hour"]?.toString(), // bisa number/string/null
-    imageUrl: json["image_url"] as String?, // bisa null
-  );
+  id: int.tryParse(json["id"]?.toString() ?? '') ?? 0, // Fix disini
+  name: (json["name"] ?? "").toString(),
+  createdAt: json["created_at"] != null
+      ? DateTime.tryParse(json["created_at"].toString())
+      : null,
+  updatedAt: json["updated_at"] != null
+      ? DateTime.tryParse(json["updated_at"].toString())
+      : null,
+  imagePath: json["image_path"] as String?,
+  pricePerHour: json["price_per_hour"]?.toString(),
+  imageUrl: json["image_url"] as String?,
+);
 
   Map<String, dynamic> toJson() => {
     "id": id,
