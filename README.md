@@ -1,4 +1,4 @@
-# 🏟️ Aplikasi Futsal
+# Aplikasi Futsal
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter)](https://flutter.dev/)  
 [![Dart](https://img.shields.io/badge/Dart-2.x-0175C2?logo=dart)](https://dart.dev/)  
@@ -12,11 +12,11 @@
 
 ---
 
-## 📌 Deskripsi
+## Deskripsi
 Aplikasi ini dibuat dengan **Flutter** untuk membantu pengguna dalam melakukan pemesanan lapangan futsal, registrasi akun, serta mengelola data pengguna dan lapangan.  
 Struktur project diatur agar modular dan mudah untuk dikembangkan.
 
-## 📱 Daftar Halaman
+## Daftar Halaman
 
 ### 🔑 Autentikasi
 - **login_futsal.dart** → Halaman login pengguna.  
@@ -24,7 +24,7 @@ Struktur project diatur agar modular dan mudah untuk dikembangkan.
 - **logreg.dart** → Penghubung login & registrasi.  
 - **splash_screens.dart** → Halaman pembuka aplikasi.  
 
-### 🏠 User
+### User
 - **home_futsal.dart** → Halaman beranda aplikasi.  
 - **lapangan_screen.dart** → Daftar lapangan yang tersedia.  
 - **detail_field.dart** → Detail informasi lapangan.  
@@ -32,18 +32,18 @@ Struktur project diatur agar modular dan mudah untuk dikembangkan.
 - **etikcet.dart** → Tiket/konfirmasi booking.  
 - **profile.dart** → Profil pengguna.  
 
-### 🛠️ Admin
+### Admin
 - **admin/add_lapangan.dart** → Halaman tambah lapangan baru.  
 - **admin/test.dart** → Halaman untuk testing/admin tools.  
 
 ---
 
-## 🛠️ Teknologi
+## Teknologi
 - **Flutter** (Dart) → Framework utama  
 - **Shared Preferences** → Penyimpanan lokal sederhana  
 - **API Services** → Integrasi backend  
 
-👨‍💻 Kontributor
+Developer
   Ayad Allawi
 
 
