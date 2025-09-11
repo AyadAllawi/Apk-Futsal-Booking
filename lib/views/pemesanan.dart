@@ -112,11 +112,23 @@ class _PemesananPageState extends State<PemesananPage>
         final filteredBookings = allBookings.where((booking) {
           final bookingDate = DateTime.tryParse(booking.date);
           if (bookingDate == null) return false;
+
+          // Normalisasi tanggal ke "hari" (biar gak salah hitung jam)
+          final bookingDay = DateTime(
+            bookingDate.year,
+            bookingDate.month,
+            bookingDate.day,
+          );
+          final today = DateTime(now.year, now.month, now.day);
+
           if (isHistory) {
-            return bookingDate.isBefore(now);
+            // Riwayat = sudah lewat atau dibatalkan
+            return bookingDay.isBefore(today) || booking.status == "cancelled";
           } else {
-            return bookingDate.isAtSameMomentAs(now) ||
-                bookingDate.isAfter(now);
+            // Berlangsung = hari ini atau ke depan & status masih aktif
+            return (bookingDay.isAtSameMomentAs(today) ||
+                    bookingDay.isAfter(today)) &&
+                booking.status == "confirmed";
           }
         }).toList();
 
@@ -182,7 +194,6 @@ class _PemesananPageState extends State<PemesananPage>
             ),
           ),
 
-     
           Container(
             margin: const EdgeInsets.only(bottom: 1),
             decoration: BoxDecoration(
@@ -198,7 +209,6 @@ class _PemesananPageState extends State<PemesananPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-           
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
@@ -228,9 +238,9 @@ class _PemesananPageState extends State<PemesananPage>
                               "Tanggal: ${DateFormat('dd MMMM yyyy').format(DateTime.parse(booking.date))}",
                               style: const TextStyle(
                                 fontSize: 12,
-                                 color: Colors.black87,
+                                color: Colors.black87,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Poppins'
+                                fontFamily: 'Poppins',
                               ),
                             ),
                             Text(
@@ -239,7 +249,7 @@ class _PemesananPageState extends State<PemesananPage>
                                 fontSize: 12,
                                 color: Colors.black87,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Poppins'
+                                fontFamily: 'Poppins',
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -251,13 +261,13 @@ class _PemesananPageState extends State<PemesananPage>
                                     ? Colors.green
                                     : Colors.orange,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Poppins'
+                                fontFamily: 'Poppins',
                               ),
                             ),
                           ],
                         ),
                       ),
-                     
+
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 2,
@@ -290,7 +300,6 @@ class _PemesananPageState extends State<PemesananPage>
                   ),
                 ),
 
-   
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 1),
@@ -304,7 +313,88 @@ class _PemesananPageState extends State<PemesananPage>
                     child: TextButton(
                       onPressed: _loadingCancelId == booking.id
                           ? null
-                          : () => _cancelBooking(booking.id!),
+                          : () {
+                              showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                builder: (context) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.warning_amber_rounded,
+                                          size: 48,
+                                          color: Colors.red,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text(
+                                          "Batalkan Booking?",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          "Apakah kamu yakin ingin membatalkan booking ini? Tindakan ini tidak bisa dibatalkan.",
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 20),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: OutlinedButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                style: OutlinedButton.styleFrom(
+                                                  side: const BorderSide(
+                                                    color: Colors.grey,
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                ),
+                                                child: const Text("Kembali"),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  _cancelBooking(booking.id);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  "Ya, Batalkan",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                       child: _loadingCancelId == booking.id
                           ? const SizedBox(
                               width: 18,
